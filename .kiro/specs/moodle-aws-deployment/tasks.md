@@ -6,14 +6,14 @@ This plan implements the AWS CDK v2 (TypeScript) infrastructure for deploying Mo
 
 ## Tasks
 
-- [ ] 1. Scaffold CDK project and configuration
-  - [ ] 1.1 Initialize CDK TypeScript project with package.json, tsconfig.json, cdk.json, and install dependencies (aws-cdk-lib, constructs, fast-check, jest, ts-jest)
+- [x] 1. Scaffold CDK project and configuration
+  - [x] 1.1 Initialize CDK TypeScript project with package.json, tsconfig.json, cdk.json, and install dependencies (aws-cdk-lib, constructs, fast-check, jest, ts-jest)
     - Create `moodle-cdk/` directory structure as defined in design: `bin/`, `lib/`, `lib/constructs/`, `docker/`, `docker/config/`, `test/unit/`, `test/property/`
     - Configure `cdk.json` with default context values for MoodleConfig
     - Configure `jest.config.ts` for unit and property test directories
     - _Requirements: 11.1_
 
-  - [ ] 1.2 Implement MoodleConfig interface and validation function in `lib/config.ts`
+  - [x] 1.2 Implement MoodleConfig interface and validation function in `lib/config.ts`
     - Define the `MoodleConfig` interface with all parameters from the design
     - Implement `validateConfig()` that checks Fargate CPU/memory validity, scaling ranges (min <= max), ACU ranges, opcacheMemory bounds (128-512), and required fields (domainName, region)
     - Implement `loadConfig(app: cdk.App)` to read from cdk.json context with defaults
@@ -27,8 +27,8 @@ This plan implements the AWS CDK v2 (TypeScript) infrastructure for deploying Mo
     - Test missing domainName is rejected
     - _Requirements: 11.3_
 
-- [ ] 2. Implement networking construct
-  - [ ] 2.1 Create `lib/constructs/networking.ts` — VPC, subnets, NAT Gateways, VPC endpoints, flow logs, and security groups
+- [x] 2. Implement networking construct
+  - [x] 2.1 Create `lib/constructs/networking.ts` — VPC, subnets, NAT Gateways, VPC endpoints, flow logs, and security groups
     - Provision VPC with 2+ AZs, public and private subnets
     - Create NAT Gateways in public subnets
     - Add VPC interface endpoints for ECR (ecr.api, ecr.dkr) and gateway endpoint for S3
@@ -44,8 +44,8 @@ This plan implements the AWS CDK v2 (TypeScript) infrastructure for deploying Mo
     - Test security group ingress rules follow least-privilege chain
     - _Requirements: 1.1, 1.2, 1.3, 1.4, 1.5, 1.6_
 
-- [ ] 3. Implement security construct and secrets management
-  - [ ] 3.1 Create `lib/constructs/security.ts` — KMS keys and Secrets Manager entries
+- [x] 3. Implement security construct and secrets management
+  - [x] 3.1 Create `lib/constructs/security.ts` — KMS keys and Secrets Manager entries
     - Create KMS keys for Aurora, ElastiCache, and EFS encryption
     - Create Secrets Manager secrets for Moodle admin password and any API keys
     - Enable auto-rotation on all secrets
@@ -56,8 +56,8 @@ This plan implements the AWS CDK v2 (TypeScript) infrastructure for deploying Mo
     - Test Secrets Manager secrets have rotation schedules
     - _Requirements: 8.1, 8.2, 8.3_
 
-- [ ] 4. Implement database construct
-  - [ ] 4.1 Create `lib/constructs/database.ts` — Aurora Serverless v2 cluster
+- [x] 4. Implement database construct
+  - [x] 4.1 Create `lib/constructs/database.ts` — Aurora Serverless v2 cluster
     - Provision Aurora Serverless v2 cluster with MySQL-compatible engine
     - Configure ServerlessV2ScalingConfiguration with min/max ACU from config
     - Deploy writer + reader instances across AZs for Multi-AZ
@@ -76,8 +76,8 @@ This plan implements the AWS CDK v2 (TypeScript) infrastructure for deploying Mo
     - Test storage encryption enabled with KMS
     - _Requirements: 2.1, 2.2, 2.3, 2.4, 2.5, 2.6_
 
-- [ ] 5. Implement caching construct
-  - [ ] 5.1 Create `lib/constructs/cache.ts` — ElastiCache Serverless clusters for MUC and sessions
+- [x] 5. Implement caching construct
+  - [x] 5.1 Create `lib/constructs/cache.ts` — ElastiCache Serverless clusters for MUC and sessions
     - Provision two ElastiCache Serverless clusters (one for MUC, one for sessions)
     - Configure ECPU and data storage limits from config
     - Enable TLS encryption in transit on both clusters
@@ -91,8 +91,8 @@ This plan implements the AWS CDK v2 (TypeScript) infrastructure for deploying Mo
     - Test scaling limits match config
     - _Requirements: 3.1, 3.2, 3.3, 3.4_
 
-- [ ] 6. Implement storage construct
-  - [ ] 6.1 Create `lib/constructs/storage.ts` — EFS filesystem with access points
+- [x] 6. Implement storage construct
+  - [x] 6.1 Create `lib/constructs/storage.ts` — EFS filesystem with access points
     - Provision EFS filesystem with elastic throughput mode
     - Enable encryption at rest with KMS key
     - Enforce encryption in transit
@@ -109,11 +109,11 @@ This plan implements the AWS CDK v2 (TypeScript) infrastructure for deploying Mo
     - Test encryption in transit is enforced
     - _Requirements: 4.1, 4.2, 4.3, 4.4_
 
-- [ ] 7. Checkpoint — Ensure all tests pass
+- [x] 7. Checkpoint — Ensure all tests pass
   - Ensure all tests pass, ask the user if questions arise.
 
-- [ ] 8. Implement load balancer construct
-  - [ ] 8.1 Create `lib/constructs/loadbalancer.ts` — ALB with HTTPS and health checks
+- [x] 8. Implement load balancer construct
+  - [x] 8.1 Create `lib/constructs/loadbalancer.ts` — ALB with HTTPS and health checks
     - Provision internet-facing ALB in public subnets
     - Create HTTPS listener on port 443 with ACM certificate
     - Create HTTP listener on port 80 with redirect to HTTPS
@@ -128,8 +128,8 @@ This plan implements the AWS CDK v2 (TypeScript) infrastructure for deploying Mo
     - Test health check configuration on target group
     - _Requirements: 6.1, 6.2, 6.3, 6.4_
 
-- [ ] 9. Implement Moodle container image
-  - [ ] 9.1 Create `docker/Dockerfile`, `docker/config/php.ini`, `docker/config/moodle-cron.sh`, and `docker/config/entrypoint.sh`
+- [x] 9. Implement Moodle container image
+  - [x] 9.1 Create `docker/Dockerfile`, `docker/config/php.ini`, `docker/config/moodle-cron.sh`, and `docker/config/entrypoint.sh`
     - Dockerfile: PHP base image with required Moodle extensions, filesystem layout (/var/www/moodle/html, /local, /data, /cache, /temp)
     - php.ini: OPcache settings (memory 256-512 MB, high max_accelerated_files)
     - moodle-cron.sh: Cron runner executing Moodle cron every 1 minute
@@ -137,8 +137,8 @@ This plan implements the AWS CDK v2 (TypeScript) infrastructure for deploying Mo
     - Ensure no hardcoded credentials in any file
     - _Requirements: 10.1, 10.2, 10.3, 10.4, 10.5_
 
-- [ ] 10. Implement compute construct
-  - [ ] 10.1 Create `lib/constructs/compute.ts` — ECS cluster, service, task definition, auto-scaling
+- [x] 10. Implement compute construct
+  - [x] 10.1 Create `lib/constructs/compute.ts` — ECS cluster, service, task definition, auto-scaling
     - Create ECS cluster with Fargate and Fargate Spot capacity providers
     - Create ECR repository for Moodle Docker image
     - Define task definition with CPU/memory from config, EFS volume mounts for data/cache/temp, secrets references from Secrets Manager (not environment variables), log configuration with awslogs driver
@@ -158,8 +158,8 @@ This plan implements the AWS CDK v2 (TypeScript) infrastructure for deploying Mo
     - Test ECR repository exists
     - _Requirements: 5.1, 5.2, 5.3, 5.4, 5.6, 5.7, 5.8, 8.5_
 
-- [ ] 11. Implement CDN construct
-  - [ ] 11.1 Create `lib/constructs/cdn.ts` — CloudFront distribution
+- [x] 11. Implement CDN construct
+  - [x] 11.1 Create `lib/constructs/cdn.ts` — CloudFront distribution
     - Provision CloudFront distribution with ALB as origin
     - Configure cache behaviors for static assets
     - Associate ACM certificate (us-east-1)
@@ -174,8 +174,8 @@ This plan implements the AWS CDK v2 (TypeScript) infrastructure for deploying Mo
     - Test cache behaviors for static assets
     - _Requirements: 7.1, 7.2, 7.4, 7.5_
 
-- [ ] 12. Implement monitoring construct
-  - [ ] 12.1 Create `lib/constructs/monitoring.ts` — CloudWatch, CloudTrail, SNS, dashboards
+- [x] 12. Implement monitoring construct
+  - [x] 12.1 Create `lib/constructs/monitoring.ts` — CloudWatch, CloudTrail, SNS, dashboards
     - Create CloudWatch Log Groups for ECS containers
     - Create CloudWatch Alarms for ECS CPU, ECS memory, ALB target response time
     - Create CloudTrail trail with encrypted S3 bucket
@@ -191,23 +191,23 @@ This plan implements the AWS CDK v2 (TypeScript) infrastructure for deploying Mo
     - Test dashboard resource exists
     - _Requirements: 9.1, 9.2, 9.3, 9.4, 9.5_
 
-- [ ] 13. Checkpoint — Ensure all tests pass
+- [x] 13. Checkpoint — Ensure all tests pass
   - Ensure all tests pass, ask the user if questions arise.
 
-- [ ] 14. Implement WAF stack and wire all stacks together
-  - [ ] 14.1 Create `lib/waf-stack.ts` — WAF WebACL in us-east-1
+- [x] 14. Implement WAF stack and wire all stacks together
+  - [x] 14.1 Create `lib/waf-stack.ts` — WAF WebACL in us-east-1
     - Create WebACL with AWSManagedRulesCommonRuleSet and AWSManagedRulesKnownBadInputsRuleSet
     - Export WebACL ARN via CfnOutput for cross-region consumption
     - _Requirements: 7.3_
 
-  - [ ] 14.2 Create `lib/moodle-stack.ts` — Main orchestrating stack
+  - [x] 14.2 Create `lib/moodle-stack.ts` — Main orchestrating stack
     - Instantiate all constructs (networking, security, database, cache, storage, loadbalancer, compute, cdn, monitoring) with correct dependency wiring
     - Pass cross-construct references (VPC, security groups, secrets, endpoints, target groups)
     - Apply cost-allocation tags to all resources from config
     - Export key CloudFormation outputs (CloudFront domain, ALB DNS, ECR URI, Aurora endpoint, cache endpoints)
     - _Requirements: 11.2, 11.6, 12.4_
 
-  - [ ] 14.3 Create `bin/app.ts` — CDK app entry point
+  - [x] 14.3 Create `bin/app.ts` — CDK app entry point
     - Load and validate config
     - Instantiate WafStack in us-east-1
     - Instantiate MoodleStack in target region with WAF WebACL ARN reference
@@ -287,15 +287,15 @@ This plan implements the AWS CDK v2 (TypeScript) infrastructure for deploying Mo
     - **Property 15: Cost Allocation Tags**
     - **Validates: Requirements 12.4**
 
-- [ ] 16. Create README and final checkpoint
-  - [ ] 16.1 Create `moodle-cdk/README.md` documenting prerequisites, configuration parameters, and deployment sequence
+- [x] 16. Create README and final checkpoint
+  - [x] 16.1 Create `moodle-cdk/README.md` documenting prerequisites, configuration parameters, and deployment sequence
     - Document Node.js 18+, AWS CLI, CDK v2, Docker prerequisites
     - Document all MoodleConfig parameters with defaults
     - Document deployment steps: WAF stack first (us-east-1), then main stack (target region)
     - Document ACM certificate prerequisites (regional + us-east-1)
     - _Requirements: 11.5_
 
-  - [ ] 16.2 Final checkpoint — Ensure all tests pass
+  - [x] 16.2 Final checkpoint — Ensure all tests pass
     - Ensure all tests pass, ask the user if questions arise.
 
 ## Notes
