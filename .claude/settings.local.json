@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(sudo apt-get install -y poppler-utils 2>/dev/null || apt-get install -y poppler-utils 2>/dev/null)",
+      "Bash(which pdftotext:*)",
+      "Bash(tail:*)",
+      "Bash(which python3:*)",
+      "Bash(which node:*)",
+      "Bash(cd /tmp/pdf-extract && \"/mnt/c/Program Files/nodejs/node.exe\" extract.mjs 2>&1)",
+      "WebFetch(domain:d1.awsstatic.com)",
+      "WebFetch(domain:aws.amazon.com)",
+      "WebSearch",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:deepwiki.com)",
+      "WebFetch(domain:docs.amplify.aws)",
+      "WebFetch(domain:docs.moodle.org)"
+    ]
+  }
+}

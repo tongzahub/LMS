@@ -1,0 +1,2 @@
+https://d1.awsstatic.com/solutions/guidance/architecture-diagrams/deploying-moodle-learning-management-system-on-aws.pdf
+https://aws.amazon.com/th/blogs/publicsector/modernize-moodle-lms-with-aws-serverless-services/
