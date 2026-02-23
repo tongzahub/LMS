@@ -3,10 +3,10 @@
 import { useState, useRef, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useI18n } from '@/contexts/I18nContext';
-import { Bell, LogOut, Globe, ChevronDown } from 'lucide-react';
+import { Bell, LogOut, Globe, ChevronDown, Menu } from 'lucide-react';
 import type { Locale } from '@/lib/utils/i18n';
 
-export function Navbar() {
+export function Navbar({ onMenuToggle }: { onMenuToggle?: () => void }) {
   const { user, signOut } = useAuth();
   const { locale, setLocale, t } = useI18n();
   const [userMenuOpen, setUserMenuOpen] = useState(false);
@@ -37,6 +37,13 @@ export function Navbar() {
   return (
     <header className="h-16 border-b border-gray-200 bg-white flex items-center justify-between px-4 lg:px-6">
       <div className="flex items-center gap-2">
+        <button
+          onClick={onMenuToggle}
+          className="p-2 rounded-lg hover:bg-gray-100 transition-colors lg:hidden min-h-[44px] min-w-[44px] flex items-center justify-center"
+          aria-label="Toggle navigation menu"
+        >
+          <Menu className="h-5 w-5 text-gray-600" />
+        </button>
         <div className="h-8 w-8 rounded-lg bg-blue-600 flex items-center justify-center lg:hidden">
           <span className="text-white font-bold text-sm">E</span>
         </div>

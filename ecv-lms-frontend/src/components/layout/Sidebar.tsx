@@ -54,14 +54,14 @@ export function getNavItemsForRole(role: UserRole | null): NavItem[] {
   return NAV_ITEMS.filter((item) => item.roles.includes(role));
 }
 
-export function Sidebar() {
+export function Sidebar({ mobileOpen = false, onMobileClose }: { mobileOpen?: boolean; onMobileClose?: () => void }) {
   const { role } = useAuth();
   const { t } = useI18n();
   const pathname = usePathname();
   const items = getNavItemsForRole(role);
 
-  return (
-    <aside className="w-64 border-r border-gray-200 bg-white h-full overflow-y-auto hidden lg:block">
+  const sidebarContent = (
+    <>
       <div className="flex items-center gap-2 px-4 py-5 border-b border-gray-200">
         <div className="h-8 w-8 rounded-lg bg-blue-600 flex items-center justify-center">
           <span className="text-white font-bold text-sm">E</span>
@@ -77,6 +77,7 @@ export function Sidebar() {
               <li key={item.href}>
                 <Link
                   href={item.href}
+                  onClick={onMobileClose}
                   className={`flex items-center gap-3 px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
                     isActive
                       ? 'bg-blue-50 text-blue-700'
@@ -92,6 +93,33 @@ export function Sidebar() {
           })}
         </ul>
       </nav>
-    </aside>
+    </>
+  );
+
+  return (
+    <>
+      {/* Desktop sidebar */}
+      <aside className="w-64 border-r border-gray-200 bg-white h-full overflow-y-auto hidden lg:block">
+        {sidebarContent}
+      </aside>
+
+      {/* Mobile sidebar overlay */}
+      {mobileOpen && (
+        <div className="fixed inset-0 z-40 lg:hidden">
+          {/* Backdrop */}
+          <div
+            className="fixed inset-0 bg-black/50"
+            onClick={onMobileClose}
+            aria-hidden="true"
+          />
+          {/* Drawer */}
+          <aside className="fixed inset-y-0 left-0 w-64 bg-white shadow-xl overflow-y-auto z-50">
+            {sidebarContent}
+          </aside>
+        </div>
+      )}
+    </>
   );
 }
+
+

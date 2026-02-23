@@ -92,7 +92,7 @@ function DataTable<T extends Record<string, unknown>>({
       </Table>
 
       {totalPages > 1 && (
-        <nav className="flex items-center justify-between mt-4 px-2" aria-label="Table pagination">
+        <nav className="flex flex-wrap items-center justify-between gap-2 mt-4 px-2" aria-label="Table pagination">
           <span className="text-sm text-gray-600">
             Showing {startIndex + 1}–{Math.min(startIndex + pageSize, data.length)} of {data.length}
           </span>

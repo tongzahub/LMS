@@ -264,7 +264,7 @@ This plan implements the ECV LMS Frontend Portal as a Next.js 15 (App Router) ap
     - Create `app/(protected)/admin/users/approvals/page.tsx`
     - _Requirements: 16.3_
 
-- [-] 10. Teacher dashboard and course management
+- [x] 10. Teacher dashboard and course management
   - [x] 10.1 Implement teacher dashboard
     - Create `components/dashboard/TeacherDashboard.tsx` with managed course cards, at-risk students list, recent submissions
     - Wire into `app/(protected)/dashboard/page.tsx` for TEACHER role
@@ -281,19 +281,19 @@ This plan implements the ECV LMS Frontend Portal as a Next.js 15 (App Router) ap
     - Implement draft/published toggle, enrollment configuration, completion criteria config
     - _Requirements: 22.1, 22.2, 22.3, 22.4, 22.5_
 
-  - [~] 10.4 Implement course analytics
+  - [x] 10.4 Implement course analytics
     - Create `components/courses/CourseAnalyticsCharts.tsx` with enrollment trend, completion rate, grade distribution charts
     - Create `components/courses/StudentProgressTable.tsx` with per-student progress, grade, at-risk flag
     - Create `app/(protected)/courses/[id]/analytics/page.tsx` and `app/(protected)/teacher/courses/[id]/analytics/page.tsx`
     - Implement PDF/CSV export for analytics reports
     - _Requirements: 23.1, 23.2, 23.3, 23.4_
 
-- [ ] 11. Checkpoint - Ensure all tests pass
+- [x] 11. Checkpoint - Ensure all tests pass
   - Ensure all tests pass, ask the user if questions arise.
 
 
-- [ ] 12. Learning plans and competency management
-  - [~] 12.1 Implement competency framework management (admin)
+- [x] 12. Learning plans and competency management
+  - [x] 12.1 Implement competency framework management (admin)
     - Create `components/learning-plans/FrameworkManager.tsx` with framework list, create/edit form
     - Create `components/learning-plans/CompetencyTree.tsx` with hierarchical tree view, create/edit/delete competency nodes
     - Create `app/(protected)/admin/competencies/page.tsx` and `app/(protected)/admin/competencies/[frameworkId]/page.tsx`
@@ -303,7 +303,7 @@ This plan implements the ECV LMS Frontend Portal as a Next.js 15 (App Router) ap
     - **Property 26: Competency tree hierarchy** — For any competency dataset with parent-child relationships, tree renders correct hierarchy with all nodes
     - **Validates: Requirements 18.3**
 
-  - [~] 12.3 Implement learning plan template management (admin/teacher)
+  - [x] 12.3 Implement learning plan template management (admin/teacher)
     - Create `components/learning-plans/TemplateManager.tsx` with template list, create/edit form, competency selection
     - Create `components/learning-plans/TemplateAssignDialog.tsx` for assigning templates to users or cohorts
     - Create `app/(protected)/admin/plan-templates/page.tsx` and `app/(protected)/admin/plan-templates/[id]/page.tsx`
@@ -313,7 +313,7 @@ This plan implements the ECV LMS Frontend Portal as a Next.js 15 (App Router) ap
     - **Property 27: Cohort template assignment creates plans for all members** — For any cohort with N members, assignment creates exactly N plan requests
     - **Validates: Requirements 19.4**
 
-  - [~] 12.5 Implement student learning plan views
+  - [x] 12.5 Implement student learning plan views
     - Create `components/learning-plans/PlanList.tsx` with plan cards showing name, due date, progress, status
     - Create `components/learning-plans/PlanDetailView.tsx` with competency progress bars, linked courses, recommended courses
     - Create `components/learning-plans/CompetencyProgressBar.tsx` showing current vs required proficiency
@@ -327,7 +327,7 @@ This plan implements the ECV LMS Frontend Portal as a Next.js 15 (App Router) ap
     - **Property 29: Recommended courses for unmet competencies** — For any plan, courses are recommended only for competencies below required proficiency
     - **Validates: Requirements 20.3**
 
-  - [~] 12.7 Implement learning plan administration (admin/teacher)
+  - [x] 12.7 Implement learning plan administration (admin/teacher)
     - Create `components/learning-plans/PlanApprovalQueue.tsx` with plans in waiting_for_review status, approve/reject actions
     - Create `components/learning-plans/CompetencyGradingForm.tsx` for teachers to grade competencies
     - Create progress monitoring dashboard showing cohort/team progress per template
@@ -341,13 +341,13 @@ This plan implements the ECV LMS Frontend Portal as a Next.js 15 (App Router) ap
     - **Property 31: Cohort progress aggregation** — For any plan set grouped by template/cohort, average progress is correctly calculated
     - **Validates: Requirements 21.3**
 
-- [ ] 13. Admin dashboard, audit logs, and system reports
-  - [~] 13.1 Implement admin dashboard
+- [x] 13. Admin dashboard, audit logs, and system reports
+  - [x] 13.1 Implement admin dashboard
     - Create `components/dashboard/AdminDashboard.tsx` with summary stats (total users, active today, courses, enrollments, pending approvals), registration trend chart, role distribution, recent activity
     - Wire into `app/(protected)/dashboard/page.tsx` for ADMIN role
     - _Requirements: 9.1, 9.2, 9.3_
 
-  - [~] 13.2 Implement audit log viewer
+  - [x] 13.2 Implement audit log viewer
     - Create `components/users/AuditLogTable.tsx` with date range, user, and action type filters
     - Create `app/(protected)/admin/audit-log/page.tsx`
     - _Requirements: 17.1_
@@ -356,28 +356,28 @@ This plan implements the ECV LMS Frontend Portal as a Next.js 15 (App Router) ap
     - **Property 25: Audit log filtering** — For any filter combination and log dataset, all displayed entries match all filter criteria
     - **Validates: Requirements 17.1**
 
-  - [~] 13.4 Implement system reports
+  - [x] 13.4 Implement system reports
     - Create `app/(protected)/admin/reports/page.tsx` with user registration trends, active user counts, course completion rates, enrollment trends
     - Implement CSV/PDF export for reports
     - _Requirements: 17.2, 17.3_
 
-- [ ] 14. User profile and SSO
-  - [~] 14.1 Implement user profile page
+- [x] 14. User profile and SSO
+  - [x] 14.1 Implement user profile page
     - Create `app/(protected)/profile/page.tsx` with profile view/edit form, password change, MFA settings, language preference toggle
     - Profile edit syncs to both Cognito (updateUserAttributes) and Moodle (via BFF)
     - Language preference change updates i18n context without page reload
     - _Requirements: 24.1, 24.2, 24.3, 24.4_
 
-  - [~] 14.2 Implement SSO redirect to Moodle
+  - [x] 14.2 Implement SSO redirect to Moodle
     - Finalize `components/layout/MoodleLink.tsx` to construct correct Moodle OAuth2 login URL with issuer_id
     - Integrate MoodleLink into course outline activity clicks, dashboard quick actions, and navigation
     - _Requirements: 5.1, 5.3, 11.6_
 
-- [ ] 15. Checkpoint - Ensure all tests pass
+- [x] 15. Checkpoint - Ensure all tests pass
   - Ensure all tests pass, ask the user if questions arise.
 
-- [ ] 16. Cognito Lambda triggers (CDK)
-  - [~] 16.1 Implement Cognito Lambda triggers as CDK construct
+- [x] 16. Cognito Lambda triggers (CDK)
+  - [x] 16.1 Implement Cognito Lambda triggers as CDK construct
     - Create `lib/constructs/cognito-triggers.ts` in the CDK project
     - Implement Post-Confirmation Lambda: extract user attributes from event, call Moodle `core_user_create_users`, store moodle_user_id as custom attribute, add user to STUDENTS group
     - Implement Pre-Token Generation Lambda: add custom:moodle_user_id and custom:permissions claims to tokens
@@ -385,8 +385,8 @@ This plan implements the ECV LMS Frontend Portal as a Next.js 15 (App Router) ap
     - Wire triggers into Cognito User Pool construct
     - _Requirements: 5.2_
 
-- [ ] 17. Final integration and polish
-  - [~] 17.1 Wire all components together and verify navigation
+- [x] 17. Final integration and polish
+  - [x] 17.1 Wire all components together and verify navigation
     - Ensure all routes are connected: dashboard → courses → course detail → syllabus → Moodle SSO
     - Ensure admin routes: users → user detail → edit → CSV import → cohorts → audit log → reports
     - Ensure learning plan routes: plans → plan detail → competency frameworks → templates
@@ -394,17 +394,17 @@ This plan implements the ECV LMS Frontend Portal as a Next.js 15 (App Router) ap
     - Verify role-based sidebar navigation shows correct items per role
     - _Requirements: 4.2, 4.3, 4.4_
 
-  - [~] 17.2 Implement Next.js middleware for security headers
+  - [x] 17.2 Implement Next.js middleware for security headers
     - Create `middleware.ts` at project root setting CSP, X-Content-Type-Options, X-Frame-Options, HSTS, CSRF headers on all responses
     - Configure session timeout (30-minute inactivity) check in AuthContext
     - _Requirements: 6.5, 3.2_
 
-  - [~] 17.3 Responsive design pass
+  - [x] 17.3 Responsive design pass
     - Review and adjust all pages/components for desktop (1280px+), tablet (768px-1279px), and mobile (<768px) breakpoints
     - Ensure touch-friendly button sizes and swipe gestures where applicable
     - _Requirements: 26.1_
 
-- [ ] 18. Final checkpoint - Ensure all tests pass
+- [x] 18. Final checkpoint - Ensure all tests pass
   - Ensure all tests pass, ask the user if questions arise.
 
 ## Notes
