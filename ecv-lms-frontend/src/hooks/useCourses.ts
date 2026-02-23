@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiFetch } from '@/lib/api/fetch';
 
 export interface Course {
@@ -82,5 +82,61 @@ export function useCourseContents(courseId: number) {
     queryKey: ['courseContents', courseId],
     queryFn: () => apiFetch<CourseSection[]>(`/api/moodle/courses/${courseId}/contents`),
     enabled: courseId > 0,
+  });
+}
+
+export interface CreateCourseParams {
+  fullname: string;
+  shortname: string;
+  summary?: string;
+  categoryId: number;
+  format: 'weeks' | 'topics';
+  startDate?: string;
+  endDate?: string;
+  visible: boolean;
+  difficulty?: 'beginner' | 'intermediate' | 'advanced' | 'expert';
+  language?: string;
+  credits?: number;
+  duration?: string;
+  tags?: string[];
+  maxEnrollment?: number;
+  sections?: { name: string; summary: string }[];
+  competencyIds?: number[];
+  enrollmentMethods?: { type: string; enabled: boolean; key?: string; capacity?: number }[];
+  completionCriteria?: { type: string; value?: string }[];
+}
+
+export interface UpdateCourseParams extends Partial<CreateCourseParams> {
+  id: number;
+}
+
+export function useCreateCourse() {
+  const queryClient = useQueryClient();
+
+  return useMutation<Course, Error, CreateCourseParams>({
+    mutationFn: (params) =>
+      apiFetch<Course>('/api/moodle/courses', {
+        method: 'POST',
+        body: JSON.stringify(params),
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['courses'] });
+    },
+  });
+}
+
+export function useUpdateCourse() {
+  const queryClient = useQueryClient();
+
+  return useMutation<void, Error, UpdateCourseParams>({
+    mutationFn: ({ id, ...data }) =>
+      apiFetch<void>(`/api/moodle/courses/${id}`, {
+        method: 'PUT',
+        body: JSON.stringify(data),
+      }),
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['courses'] });
+      queryClient.invalidateQueries({ queryKey: ['course', variables.id] });
+    },
   });
 }

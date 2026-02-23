@@ -135,7 +135,7 @@ This plan implements the ECV LMS Frontend Portal as a Next.js 15 (App Router) ap
   - Ensure all tests pass, ask the user if questions arise.
 
 
-- [ ] 5. TanStack Query hooks and data layer
+- [x] 5. TanStack Query hooks and data layer
   - [x] 5.1 Implement course data hooks
     - Create `hooks/useCourses.ts` with `useCourses(options)`, `useCourseDetail(id)`, `useCourseContents(id)` using TanStack Query
     - Create `hooks/useEnrollments.ts` with `useEnrollSelf(courseId)`, `useBatchEnroll()` mutations
@@ -149,18 +149,18 @@ This plan implements the ECV LMS Frontend Portal as a Next.js 15 (App Router) ap
     - Create `hooks/useCohorts.ts` with `useCohorts()`, `useCreateCohort()`, `useCohortMembers(id)`, `useAddCohortMembers()`, `useRemoveCohortMembers()`
     - _Requirements: 13.1, 13.4, 13.5, 16.1_
 
-  - [~] 5.3 Implement learning plan hooks
+  - [x] 5.3 Implement learning plan hooks
     - Create `hooks/useLearningPlans.ts` with `useMyPlans()`, `usePlanDetail(id)`, `usePlanCompetencies(id)`, `useApprovePlan()`, `useGradeCompetency()`
     - Create `hooks/useCompetencies.ts` with `useFrameworks()`, `useFrameworkDetail(id)`, `useCompetencies(frameworkId)`, `useCreateCompetency()`, `useTemplates()`, `useAssignTemplate()`
     - _Requirements: 18.1, 19.1, 20.1, 21.1, 21.2_
 
-  - [~] 5.4 Implement auth hook
+  - [x] 5.4 Implement auth hook
     - Create `hooks/useAuth.ts` wrapping AuthContext for convenient access
     - Create `hooks/useRole.ts` with role-checking utilities (isAdmin, isTeacher, isStudent, hasRole)
     - _Requirements: 4.1, 4.2, 4.3, 4.4_
 
-- [ ] 6. Student dashboard and course catalog
-  - [~] 6.1 Implement student dashboard
+- [x] 6. Student dashboard and course catalog
+  - [x] 6.1 Implement student dashboard
     - Create `components/dashboard/StudentDashboard.tsx` with course cards grid, upcoming deadlines list, active learning plans summary, notification center
     - Create `components/dashboard/CourseCard.tsx` with course image, title, progress bar, last accessed date
     - Create `components/dashboard/ProgressBar.tsx` reusable progress indicator
@@ -172,7 +172,7 @@ This plan implements the ECV LMS Frontend Portal as a Next.js 15 (App Router) ap
     - **Property 11: Dashboard deadlines sorted by due date** — For any set of calendar events, displayed deadlines are ordered by timeStart ascending
     - **Validates: Requirements 7.2**
 
-  - [~] 6.3 Implement course catalog
+  - [x] 6.3 Implement course catalog
     - Create `components/courses/CourseCatalog.tsx` with grid/list view toggle, search input, category tree sidebar, filter dropdowns (difficulty, language, duration, enrollment status), sort selector
     - Create `app/(protected)/courses/page.tsx` rendering CourseCatalog
     - Implement client-side filtering and sorting logic in a `lib/courses/filter.ts` utility
@@ -190,8 +190,8 @@ This plan implements the ECV LMS Frontend Portal as a Next.js 15 (App Router) ap
     - **Property 17: Course catalog sorting** — For any sort option, courses are ordered by the correct field
     - **Validates: Requirements 10.5**
 
-- [ ] 7. Course detail, outline, and enrollment
-  - [~] 7.1 Implement course detail and outline view
+- [x] 7. Course detail, outline, and enrollment
+  - [x] 7.1 Implement course detail and outline view
     - Create `components/courses/CourseDetailHero.tsx` with title, image, description, instructor, metadata, enroll CTA
     - Create `components/courses/CourseOutline.tsx` with expandable/collapsible sections, learning objectives per section
     - Create `components/courses/SectionCard.tsx` accordion card for each module/section
@@ -212,17 +212,17 @@ This plan implements the ECV LMS Frontend Portal as a Next.js 15 (App Router) ap
     - **Property 21: Course progress calculation** — For any module completion states, progress = completed/total × 100
     - **Validates: Requirements 11.7**
 
-  - [~] 7.3 Implement self-enrollment and grade overview
+  - [x] 7.3 Implement self-enrollment and grade overview
     - Add enroll button to CourseDetailHero that calls `useEnrollSelf` hook
     - Handle enrollment errors (capacity, enrollment key) with descriptive messages
     - Create `app/(protected)/grades/page.tsx` displaying grades for all enrolled courses
     - _Requirements: 12.1, 12.2, 12.3_
 
-- [ ] 8. Checkpoint - Ensure all tests pass
+- [x] 8. Checkpoint - Ensure all tests pass
   - Ensure all tests pass, ask the user if questions arise.
 
-- [ ] 9. User management (Admin)
-  - [~] 9.1 Implement user list and profile views
+- [x] 9. User management (Admin)
+  - [x] 9.1 Implement user list and profile views
     - Create `components/users/UserTable.tsx` with paginated DataTable, search input, role/status/cohort filter dropdowns
     - Create `components/users/UserDetailCard.tsx` displaying full user profile with enrolled courses, grades, badges, certificates, learning history
     - Create `app/(protected)/admin/users/page.tsx` rendering UserTable
@@ -233,14 +233,14 @@ This plan implements the ECV LMS Frontend Portal as a Next.js 15 (App Router) ap
     - **Property 22: User list filtering** — For any search/filter criteria and user dataset, all displayed users match all criteria
     - **Validates: Requirements 13.2**
 
-  - [~] 9.3 Implement user CRUD and lifecycle management
+  - [x] 9.3 Implement user CRUD and lifecycle management
     - Create `components/users/UserForm.tsx` for create/edit user (React Hook Form + Zod validation)
     - Implement suspend/reactivate actions with confirmation dialogs
     - Implement delete/archive with data retention options and PDPA compliance
     - Create `components/users/RoleAssignment.tsx` for Cognito group assignment
     - _Requirements: 13.4, 13.5, 13.6, 14.1, 14.2, 14.3, 16.2_
 
-  - [~] 9.4 Implement CSV import/export
+  - [x] 9.4 Implement CSV import/export
     - Create `lib/csv/processor.ts` with `validateUserImportCsv()` and `generateUserExportCsv()` functions
     - Create `components/users/UserImportWizard.tsx` with file upload, validation preview, error report, confirm/cancel
     - Implement CSV template download
@@ -253,19 +253,19 @@ This plan implements the ECV LMS Frontend Portal as a Next.js 15 (App Router) ap
     - **Property 24: CSV export filtering** — For any user dataset and export options, CSV contains exactly matching users with selected fields
     - **Validates: Requirements 15.4**
 
-  - [~] 9.6 Implement cohort management and batch enrollment
+  - [x] 9.6 Implement cohort management and batch enrollment
     - Create `components/users/CohortManager.tsx` with cohort CRUD and member management
     - Create `components/users/BulkEnrollDialog.tsx` for batch enrollment (manual selection + CSV upload)
     - Create `app/(protected)/admin/cohorts/page.tsx` and `app/(protected)/admin/cohorts/[id]/page.tsx`
     - _Requirements: 16.1, 15.5_
 
-  - [~] 9.7 Implement approval queue
+  - [x] 9.7 Implement approval queue
     - Create `components/users/ApprovalQueue.tsx` with pending registrations table, approve/reject/request-info actions
     - Create `app/(protected)/admin/users/approvals/page.tsx`
     - _Requirements: 16.3_
 
-- [ ] 10. Teacher dashboard and course management
-  - [~] 10.1 Implement teacher dashboard
+- [-] 10. Teacher dashboard and course management
+  - [x] 10.1 Implement teacher dashboard
     - Create `components/dashboard/TeacherDashboard.tsx` with managed course cards, at-risk students list, recent submissions
     - Wire into `app/(protected)/dashboard/page.tsx` for TEACHER role
     - _Requirements: 8.1, 8.2, 8.3_
@@ -274,7 +274,7 @@ This plan implements the ECV LMS Frontend Portal as a Next.js 15 (App Router) ap
     - **Property 12: At-risk student detection** — For any student data, at-risk flag is true iff low progress OR overdue assignments OR no recent login
     - **Validates: Requirements 8.2, 23.3**
 
-  - [~] 10.3 Implement course management (teacher/admin)
+  - [x] 10.3 Implement course management (teacher/admin)
     - Create `components/courses/CourseCreationWizard.tsx` with step-by-step wizard (metadata → format → sections → competency mapping → publish)
     - Create `components/courses/CourseMetadataForm.tsx` for editing course metadata
     - Create `app/(protected)/admin/courses/page.tsx` and `app/(protected)/admin/courses/create/page.tsx`

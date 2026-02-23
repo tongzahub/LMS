@@ -120,3 +120,33 @@ export function useReactivateUser() {
     },
   });
 }
+
+export function useDeleteUser() {
+  const queryClient = useQueryClient();
+
+  return useMutation<void, Error, { id: number; mode: 'archive' | 'delete'; exportData?: boolean }>({
+    mutationFn: ({ id, mode, exportData }) =>
+      apiFetch<void>(`/api/moodle/users/${id}`, {
+        method: 'DELETE',
+        body: JSON.stringify({ mode, exportData }),
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['users'] });
+    },
+  });
+}
+
+export function useAssignRole() {
+  const queryClient = useQueryClient();
+
+  return useMutation<void, Error, { userId: number; role: 'ADMIN' | 'TEACHER' | 'STUDENT' }>({
+    mutationFn: ({ userId, role }) =>
+      apiFetch<void>(`/api/moodle/users/${userId}`, {
+        method: 'PUT',
+        body: JSON.stringify({ role }),
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['users'] });
+    },
+  });
+}
