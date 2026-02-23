@@ -889,23 +889,94 @@ The BFF layer communicates with Moodle using a pre-generated admin-level Web Ser
 
 #### Required Moodle Web Service Functions
 
-| Category | Function | Frontend Use Case |
-|----------|----------|-------------------|
-| **User** | `core_user_get_users_by_field` | Fetch user profile by Cognito sub |
-| **User** | `core_user_create_users` | Auto-create user from Cognito (Lambda trigger) |
-| **User** | `core_user_update_users` | Sync profile updates from Cognito |
-| **Courses** | `core_course_get_courses` | Course listing page |
-| **Courses** | `core_course_get_courses_by_field` | Course search/detail |
-| **Courses** | `core_course_get_categories` | Category-based navigation |
-| **Courses** | `core_course_get_contents` | Course content for detail view |
-| **Enrollment** | `core_enrol_get_users_courses` | Student dashboard (my courses) |
-| **Enrollment** | `enrol_manual_enrol_users` | Self-enrollment from portal |
-| **Enrollment** | `core_enrol_get_enrolled_users` | Teacher: view enrolled students |
-| **Grades** | `gradereport_user_get_grade_items` | Grade overview for students |
-| **Completion** | `core_completion_get_activities_completion_status` | Progress tracking |
-| **Calendar** | `core_calendar_get_calendar_events` | Dashboard calendar widget |
-| **Notification** | `core_message_get_messages` | Notification center |
-| **Site Info** | `core_webservice_get_site_info` | System health check |
+**User Management APIs:**
+
+| Function | Frontend Use Case |
+|----------|-------------------|
+| `core_user_get_users` | Admin: search users with criteria |
+| `core_user_get_users_by_field` | Fetch user profile by Cognito sub/email/ID |
+| `core_user_create_users` | Create user (Lambda trigger or admin form) |
+| `core_user_update_users` | Update profile (sync from Cognito or admin edit) |
+| `core_user_delete_users` | Admin: delete/archive users |
+| `core_user_get_course_user_profiles` | Teacher: view student profiles in course context |
+| `core_cohort_create_cohorts` | Admin: create cohorts |
+| `core_cohort_get_cohorts` | Admin: list cohorts |
+| `core_cohort_add_cohort_members` | Admin: add users to cohorts |
+| `core_cohort_delete_cohort_members` | Admin: remove users from cohorts |
+| `core_cohort_get_cohort_members` | Admin: view cohort members |
+| `core_role_assign_roles` | Admin: assign Moodle roles |
+| `core_role_unassign_roles` | Admin: remove Moodle roles |
+
+**Course & Content APIs:**
+
+| Function | Frontend Use Case |
+|----------|-------------------|
+| `core_course_get_courses` | Course catalog listing |
+| `core_course_get_courses_by_field` | Course search/detail by shortname, ID, category |
+| `core_course_search_courses` | Full-text course search |
+| `core_course_get_categories` | Category tree navigation |
+| `core_course_get_contents` | Course outline/syllabus (sections, activities, resources) |
+| `core_course_create_courses` | Admin/Teacher: create new courses |
+| `core_course_update_courses` | Admin/Teacher: edit course metadata |
+| `core_course_duplicate_course` | Admin/Teacher: duplicate course as template |
+| `core_course_get_enrolled_courses_by_timeline_classification` | Dashboard: past, in progress, future courses |
+
+**Enrollment APIs:**
+
+| Function | Frontend Use Case |
+|----------|-------------------|
+| `core_enrol_get_users_courses` | Student dashboard (my courses) |
+| `enrol_manual_enrol_users` | Admin/Teacher: enroll users with role |
+| `enrol_manual_unenrol_users` | Admin/Teacher: unenroll users |
+| `enrol_self_enrol_user` | Student: self-enrollment |
+| `core_enrol_get_enrolled_users` | Teacher: view enrolled students per course |
+| `core_enrol_get_course_enrolment_methods` | Course detail: available enrollment methods |
+| `core_enrol_search_users` | Admin: search users to enroll |
+
+**Grade & Completion APIs:**
+
+| Function | Frontend Use Case |
+|----------|-------------------|
+| `gradereport_user_get_grade_items` | Student: grade overview |
+| `gradereport_user_get_grades_table` | Teacher: full gradebook table |
+| `gradereport_overview_get_course_grades` | Dashboard: grades across courses |
+| `core_completion_get_course_completion_status` | Course progress (overall) |
+| `core_completion_get_activities_completion_status` | Course outline: per-activity completion |
+| `core_badges_get_user_badges` | Student profile: badge portfolio |
+
+**Learning Plan & Competency APIs:**
+
+| Function | Frontend Use Case |
+|----------|-------------------|
+| `core_competency_list_competency_frameworks` | Admin: framework management |
+| `core_competency_create_competency_framework` | Admin: create framework |
+| `core_competency_list_competencies` | Admin: view competencies in framework |
+| `core_competency_create_competency` | Admin: add competency |
+| `core_competency_list_templates` | Admin: learning plan template list |
+| `core_competency_create_template` | Admin: create plan template |
+| `core_competency_add_competency_to_template` | Admin: add competency to template |
+| `core_competency_list_user_plans` | Student: my learning plans |
+| `core_competency_read_plan` | Student/Teacher: plan detail view |
+| `core_competency_create_plan` | Admin/Teacher: create plan for user |
+| `core_competency_approve_plan` | Admin/Teacher: approve plan (draft → active) |
+| `core_competency_complete_plan` | System: mark plan as complete |
+| `core_competency_list_plan_competencies` | Plan detail: competencies in plan |
+| `core_competency_grade_competency_in_plan` | Teacher: grade competency |
+| `core_competency_add_competency_to_course` | Teacher: link competency to course |
+| `core_competency_list_course_competencies` | Course detail: linked competencies |
+| `tool_lp_data_for_plans_page` | Student: render plans page data |
+| `tool_lp_data_for_plan_page` | Student: render single plan page |
+| `tool_lp_data_for_user_competency_summary_in_plan` | Student: competency progress in plan |
+
+**Calendar & Notification APIs:**
+
+| Function | Frontend Use Case |
+|----------|-------------------|
+| `core_calendar_get_calendar_events` | Dashboard calendar widget |
+| `core_calendar_get_action_events_by_course` | Course detail: upcoming events |
+| `core_calendar_get_action_events_by_timesort` | Dashboard: upcoming deadlines |
+| `core_message_get_messages` | Notification center |
+| `core_webservice_get_site_info` | System health check |
 
 ### 7.3 SSO Flow (Frontend to Moodle)
 
@@ -956,9 +1027,17 @@ ecv-lms-frontend/
 │   │   ├── dashboard/
 │   │   │   └── page.tsx              # Role-based dashboard
 │   │   ├── courses/
-│   │   │   ├── page.tsx              # Course listing
+│   │   │   ├── page.tsx              # Course catalog / listing
 │   │   │   └── [id]/
-│   │   │       └── page.tsx          # Course detail
+│   │   │       ├── page.tsx          # Course detail & outline
+│   │   │       ├── syllabus/
+│   │   │       │   └── page.tsx      # Full syllabus view
+│   │   │       └── analytics/
+│   │   │           └── page.tsx      # Course analytics (teacher/admin)
+│   │   ├── learning-plans/
+│   │   │   ├── page.tsx              # My learning plans (student) / All plans (admin)
+│   │   │   └── [id]/
+│   │   │       └── page.tsx          # Plan detail with competency progress
 │   │   ├── grades/
 │   │   │   └── page.tsx              # Grade overview
 │   │   ├── calendar/
@@ -967,11 +1046,44 @@ ecv-lms-frontend/
 │   │   │   └── page.tsx              # User profile & settings
 │   │   ├── admin/                    # Admin-only routes
 │   │   │   ├── users/
-│   │   │   │   └── page.tsx          # User management
+│   │   │   │   ├── page.tsx          # User list (search, filter, CRUD)
+│   │   │   │   ├── [id]/
+│   │   │   │   │   └── page.tsx      # User detail/edit
+│   │   │   │   ├── import/
+│   │   │   │   │   └── page.tsx      # CSV bulk import
+│   │   │   │   └── approvals/
+│   │   │   │       └── page.tsx      # Registration approval queue
+│   │   │   ├── cohorts/
+│   │   │   │   ├── page.tsx          # Cohort management
+│   │   │   │   └── [id]/
+│   │   │   │       └── page.tsx      # Cohort members
 │   │   │   ├── courses/
-│   │   │   │   └── page.tsx          # Course management
-│   │   │   └── reports/
-│   │   │       └── page.tsx          # System reports
+│   │   │   │   ├── page.tsx          # Course management
+│   │   │   │   └── create/
+│   │   │   │       └── page.tsx      # Course creation wizard
+│   │   │   ├── competencies/
+│   │   │   │   ├── page.tsx          # Competency framework list
+│   │   │   │   └── [frameworkId]/
+│   │   │   │       └── page.tsx      # Framework detail (competency tree)
+│   │   │   ├── plan-templates/
+│   │   │   │   ├── page.tsx          # Learning plan template list
+│   │   │   │   └── [id]/
+│   │   │   │       └── page.tsx      # Template detail & assignment
+│   │   │   ├── reports/
+│   │   │   │   └── page.tsx          # System reports
+│   │   │   └── audit-log/
+│   │   │       └── page.tsx          # Audit log viewer
+│   │   ├── teacher/                  # Teacher-only routes
+│   │   │   ├── courses/
+│   │   │   │   └── [id]/
+│   │   │   │       ├── students/
+│   │   │   │       │   └── page.tsx  # Student list & progress per course
+│   │   │   │       ├── grades/
+│   │   │   │       │   └── page.tsx  # Gradebook per course
+│   │   │   │       └── analytics/
+│   │   │   │           └── page.tsx  # Course analytics
+│   │   │   └── plans/
+│   │   │       └── page.tsx          # Manage plans for my students
 │   │   └── layout.tsx                # Protected layout (auth guard)
 │   └── api/                          # BFF API Routes
 │       ├── auth/
@@ -979,15 +1091,37 @@ ecv-lms-frontend/
 │       │       └── route.ts          # Session validation endpoint
 │       ├── moodle/
 │       │   ├── courses/
-│       │   │   └── route.ts          # Proxy: Moodle course APIs
+│       │   │   ├── route.ts          # Proxy: course list, search, create
+│       │   │   └── [id]/
+│       │   │       ├── route.ts      # Proxy: course detail, update
+│       │   │       ├── contents/
+│       │   │       │   └── route.ts  # Proxy: course outline/contents
+│       │   │       ├── students/
+│       │   │       │   └── route.ts  # Proxy: enrolled students
+│       │   │       └── analytics/
+│       │   │           └── route.ts  # Proxy: course analytics
 │       │   ├── users/
-│       │   │   └── route.ts          # Proxy: Moodle user APIs
-│       │   ├── grades/
-│       │   │   └── route.ts          # Proxy: Moodle grade APIs
+│       │   │   ├── route.ts          # Proxy: user CRUD, search, bulk import
+│       │   │   └── [id]/
+│       │   │       └── route.ts      # Proxy: single user detail/update
+│       │   ├── cohorts/
+│       │   │   └── route.ts          # Proxy: cohort CRUD and membership
 │       │   ├── enrollments/
-│       │   │   └── route.ts          # Proxy: Moodle enrollment APIs
-│       │   └── calendar/
-│       │       └── route.ts          # Proxy: Moodle calendar APIs
+│       │   │   └── route.ts          # Proxy: enroll/unenroll, bulk operations
+│       │   ├── grades/
+│       │   │   └── route.ts          # Proxy: grades and gradebook
+│       │   ├── learning-plans/
+│       │   │   ├── route.ts          # Proxy: plans list, create, approve
+│       │   │   └── [id]/
+│       │   │       └── route.ts      # Proxy: plan detail, competency grading
+│       │   ├── competencies/
+│       │   │   ├── route.ts          # Proxy: frameworks, competencies CRUD
+│       │   │   └── templates/
+│       │   │       └── route.ts      # Proxy: plan templates CRUD
+│       │   ├── calendar/
+│       │   │   └── route.ts          # Proxy: calendar events
+│       │   └── completion/
+│       │       └── route.ts          # Proxy: completion status
 │       └── health/
 │           └── route.ts              # Health check endpoint
 ├── components/
@@ -1006,6 +1140,38 @@ ecv-lms-frontend/
 │   │   ├── CourseCard.tsx            # Course card component
 │   │   ├── ProgressBar.tsx           # Progress indicator
 │   │   └── NotificationBell.tsx      # Notification dropdown
+│   ├── users/                        # User management components
+│   │   ├── UserTable.tsx             # Paginated, filterable user table
+│   │   ├── UserForm.tsx              # Create/edit user form
+│   │   ├── UserDetailCard.tsx        # User profile detail card
+│   │   ├── UserImportWizard.tsx      # CSV bulk import wizard
+│   │   ├── ApprovalQueue.tsx         # Registration approval queue
+│   │   ├── RoleAssignment.tsx        # Cognito group / Moodle role picker
+│   │   ├── CohortManager.tsx         # Cohort CRUD and membership
+│   │   ├── BulkEnrollDialog.tsx      # Bulk enrollment modal
+│   │   └── AuditLogTable.tsx         # Audit log viewer table
+│   ├── courses/                      # Course management components
+│   │   ├── CourseCatalog.tsx         # Course catalog grid/list view
+│   │   ├── CourseDetailHero.tsx      # Course detail hero section
+│   │   ├── CourseOutline.tsx         # Expandable syllabus/outline view
+│   │   ├── SectionCard.tsx           # Module/section accordion card
+│   │   ├── ActivityIcon.tsx          # Icon per activity type
+│   │   ├── PrerequisiteBadge.tsx     # Prerequisite lock/check indicator
+│   │   ├── CourseCreationWizard.tsx  # Step-by-step course creation
+│   │   ├── CourseMetadataForm.tsx    # Course metadata editor
+│   │   ├── CourseAnalyticsCharts.tsx # Enrollment, completion, grade charts
+│   │   └── StudentProgressTable.tsx  # Teacher: per-student progress table
+│   ├── learning-plans/               # Learning plan components
+│   │   ├── PlanList.tsx              # Learning plan list (cards or table)
+│   │   ├── PlanDetailView.tsx        # Plan detail with competency progress
+│   │   ├── CompetencyTree.tsx        # Hierarchical competency tree view
+│   │   ├── CompetencyProgressBar.tsx # Per-competency proficiency bar
+│   │   ├── PlanTimeline.tsx          # Visual timeline with milestones
+│   │   ├── FrameworkManager.tsx      # Competency framework CRUD
+│   │   ├── TemplateManager.tsx       # Plan template CRUD
+│   │   ├── TemplateAssignDialog.tsx  # Assign template to users/cohorts
+│   │   ├── CompetencyGradingForm.tsx # Teacher: grade competency form
+│   │   └── PlanApprovalQueue.tsx     # Admin/Teacher: plan review queue
 │   ├── layout/
 │   │   ├── Navbar.tsx                # Top navigation bar
 │   │   ├── Sidebar.tsx               # Side navigation (role-based)
@@ -1017,8 +1183,13 @@ ecv-lms-frontend/
 │       ├── Input.tsx
 │       ├── Modal.tsx
 │       ├── Table.tsx
+│       ├── DataTable.tsx             # Advanced data table with sort/filter/pagination
 │       ├── Skeleton.tsx
-│       └── Toast.tsx
+│       ├── Toast.tsx
+│       ├── FileUpload.tsx            # CSV/file upload component
+│       ├── StepWizard.tsx            # Multi-step wizard container
+│       ├── StatusBadge.tsx           # Status indicator badge
+│       └── ConfirmDialog.tsx         # Confirmation dialog for destructive actions
 ├── lib/
 │   ├── amplify-config.ts             # Amplify configuration
 │   ├── auth/
@@ -1034,9 +1205,16 @@ ecv-lms-frontend/
 │       └── i18n.ts                   # Internationalization helpers
 ├── hooks/
 │   ├── useAuth.ts                    # Auth state hook (Cognito)
+│   ├── useRole.ts                    # Role/permission hook
 │   ├── useCourses.ts                 # Course data hook
+│   ├── useCourseOutline.ts           # Course outline/contents hook
 │   ├── useGrades.ts                  # Grade data hook
-│   └── useRole.ts                    # Role/permission hook
+│   ├── useUsers.ts                   # User management hook (admin)
+│   ├── useCohorts.ts                 # Cohort management hook (admin)
+│   ├── useLearningPlans.ts           # Learning plans hook
+│   ├── useCompetencies.ts            # Competency framework hook
+│   ├── useEnrollments.ts             # Enrollment management hook
+│   └── useCalendar.ts                # Calendar events hook
 ├── contexts/
 │   └── AuthContext.tsx               # Auth provider context
 ├── i18n/
@@ -1259,23 +1437,68 @@ MOODLE_WS_TOKEN=<admin-level-web-service-token>  # From Secrets Manager
 - [ ] Cognito groups correctly map to Moodle roles
 - [ ] Sign-out from portal also invalidates Moodle session
 
-### 12.3 Dashboard Acceptance
+### 12.3 User Management Acceptance
 
-- [ ] Student sees enrolled courses, progress, upcoming deadlines
-- [ ] Teacher sees managed courses, pending submissions, student progress
-- [ ] Admin sees user statistics, system overview, management tools
+- [ ] Admin can view paginated, searchable user list with role and status filters
+- [ ] Admin can create a single user with form (synced to Cognito + Moodle)
+- [ ] Admin can bulk import users via CSV with validation preview and error report
+- [ ] Admin can export user list to CSV with selected fields
+- [ ] Admin can assign/remove roles (Cognito groups → Moodle roles)
+- [ ] Admin can suspend and reactivate user accounts
+- [ ] Admin can manage cohorts: create, add/remove members, assign to courses
+- [ ] Admin can batch enroll/unenroll users in courses
+- [ ] Admin can view audit logs with date/user/action filters
+- [ ] Student profile shows enrolled courses, grades, badges, certificates, learning history
+- [ ] Teacher dashboard shows managed courses, student count, completion rates, pending submissions
+- [ ] Registration approval queue works: approve → user activated; reject → user notified
+
+### 12.4 Learning Plan Acceptance
+
+- [ ] Admin can create competency frameworks with proficiency scales
+- [ ] Admin can create/manage competencies in hierarchical tree view
+- [ ] Admin can create learning plan templates with competency selections
+- [ ] Admin/Teacher can assign plan templates to individual users or cohorts
+- [ ] Student can view "My Learning Plans" with status, due date, overall progress
+- [ ] Student can view plan detail with per-competency proficiency progress
+- [ ] Student can see recommended courses for unmet competencies
+- [ ] Teacher can grade individual competencies within plans
+- [ ] Plan approval workflow works: draft → waiting for review → active → complete
+- [ ] Certificate auto-generated on learning plan completion
+
+### 12.5 Course Outline Acceptance
+
+- [ ] Course catalog displays cards with image, title, category, instructor, metadata
+- [ ] Course search returns relevant results with category filtering
+- [ ] Course detail page shows full syllabus with expandable sections/modules
+- [ ] Each section displays learning objectives
+- [ ] Activity type icons render correctly (quiz, assignment, video, H5P, etc.)
+- [ ] Completion indicators show per-activity status for enrolled students
+- [ ] Prerequisites display with lock icons and "complete X first" messaging
+- [ ] Deep links to Moodle activities work with SSO (no re-login)
+- [ ] Teacher can view course analytics: enrollment trends, completion rates, grade distribution
+- [ ] Admin/Teacher can create courses via wizard with metadata, sections, and competency mapping
+- [ ] Draft/published toggle works: hidden courses not visible to students
+
+### 12.6 Dashboard Acceptance
+
+- [ ] Student sees enrolled courses, progress, upcoming deadlines, active learning plans
+- [ ] Teacher sees managed courses, pending submissions, student progress, at-risk alerts
+- [ ] Admin sees system overview, user stats, course stats, pending approvals
 - [ ] Dashboard data loads within 2 seconds
 - [ ] Dashboard is responsive on mobile, tablet, and desktop
 
-### 12.4 Moodle Integration Acceptance
+### 12.7 Moodle Integration Acceptance
 
-- [ ] BFF successfully proxies Moodle Web Service API calls
+- [ ] BFF successfully proxies all Moodle Web Service API calls
 - [ ] Moodle WS token is never exposed to the browser
 - [ ] Course listing displays accurate data from Moodle
+- [ ] Course outline matches Moodle course structure (sections, activities, resources)
 - [ ] Grade overview matches Moodle gradebook
 - [ ] Enrollment from portal creates enrollment in Moodle
+- [ ] Learning plan data syncs with Moodle competency/tool_lp APIs
+- [ ] User CRUD syncs between Cognito and Moodle
 
-### 12.5 Security Acceptance
+### 12.8 Security Acceptance
 
 - [ ] No Moodle credentials or tokens in browser DevTools
 - [ ] JWT validation rejects tampered/expired tokens
@@ -1283,8 +1506,10 @@ MOODLE_WS_TOKEN=<admin-level-web-service-token>  # From Secrets Manager
 - [ ] Role-based routes are enforced server-side (not just client-side)
 - [ ] API routes return 401 for unauthenticated requests
 - [ ] API routes return 403 for unauthorized role access
+- [ ] Admin-only routes inaccessible to STUDENT and TEACHER roles
+- [ ] Teacher-only routes inaccessible to STUDENT role
 
-### 12.6 i18n Acceptance
+### 12.9 i18n Acceptance
 
 - [ ] All UI text available in Thai and English
 - [ ] Language can be switched without page reload
@@ -1294,46 +1519,77 @@ MOODLE_WS_TOKEN=<admin-level-web-service-token>  # From Secrets Manager
 
 ## 13. Implementation Phases
 
-### Phase 1: Foundation (Week 1-2)
+### Phase 1: Foundation & Auth (Week 1-2)
 
 | Task | Description |
 |------|-------------|
-| Project scaffold | Next.js project with TypeScript, Tailwind, Amplify SDK |
-| Cognito CDK construct | User Pool, Groups, App Clients in CDK |
+| Project scaffold | Next.js 15 project with TypeScript, Tailwind, Amplify SDK v6 |
+| Cognito CDK construct | User Pool, Groups, App Clients, Lambda triggers in CDK |
 | Auth UI | Custom login, register, verify, forgot-password pages |
-| Auth guard | Protected route middleware |
-| BFF skeleton | API route structure with JWT validation |
+| Auth guard & role check | Protected route middleware with role-based access |
+| BFF skeleton | API route structure with JWT validation and Moodle client |
+| UI primitives | Button, Card, Input, Table, DataTable, Modal, StatusBadge |
 
-### Phase 2: Dashboard & Integration (Week 3-4)
-
-| Task | Description |
-|------|-------------|
-| Moodle Web Services client | REST client in BFF for Moodle API |
-| Student dashboard | Course cards, progress, calendar widget |
-| Course listing | Browse and search courses |
-| Grade overview | Display grades from Moodle |
-| SSO flow | Seamless redirect to Moodle with Cognito session |
-
-### Phase 3: Advanced Features (Week 5-6)
+### Phase 2: User Management & Dashboard (Week 3-4)
 
 | Task | Description |
 |------|-------------|
-| Teacher dashboard | Course management, student progress views |
-| Admin dashboard | User management, system reports |
-| Social login | Google OAuth integration |
+| Moodle WS client | Complete REST client for user, course, enrollment, grade APIs |
+| Student dashboard | Course cards, progress bars, calendar widget, learning plan summary |
+| User list (Admin) | Paginated table with search, filter by role/status/cohort |
+| User CRUD (Admin) | Create, edit, suspend, reactivate, delete users (Cognito + Moodle sync) |
+| CSV import/export | Bulk user import wizard with validation; user export with filters |
+| Role assignment | Assign Cognito groups → Moodle roles |
+| Cohort management | Create cohorts, manage members, link to courses |
+
+### Phase 3: Course Outline & Catalog (Week 5-6)
+
+| Task | Description |
+|------|-------------|
+| Course catalog | Grid/list view with search, category filter, metadata cards |
+| Course detail page | Hero section, syllabus outline, section accordion, activity icons |
+| Course outline renderer | Parse `core_course_get_contents` → expandable module view |
+| Completion indicators | Per-activity completion status for enrolled students |
+| Prerequisite display | Lock icons, "complete X first" messaging |
+| Deep link to Moodle | SSO redirect to specific activities in Moodle |
+| Teacher dashboard | Managed courses, student progress, at-risk alerts, pending submissions |
+| Course creation wizard | Step-by-step: metadata → sections → competencies → publish |
+| Course analytics | Enrollment, completion, grade distribution charts |
+
+### Phase 4: Learning Plans & Competencies (Week 7-8)
+
+| Task | Description |
+|------|-------------|
+| Competency framework UI | Framework list, create/edit, competency tree view |
+| Plan template management | Create templates, add competencies, assign to users/cohorts |
+| Student learning plans | My Plans list, plan detail with competency progress bars, timeline |
+| Competency grading | Teacher grades competencies in plan/course context |
+| Plan approval workflow | Draft → review → active → complete status transitions |
+| Plan progress monitoring | Admin/Teacher view: team/cohort progress dashboard |
+
+### Phase 5: Advanced Features (Week 9-10)
+
+| Task | Description |
+|------|-------------|
+| Social login | Google OAuth integration via Cognito |
 | MFA | TOTP setup and sign-in flow |
-| Lambda triggers | Post-confirmation (Moodle user sync), pre-token generation |
+| Notification center | In-app notifications from Moodle messages |
+| Approval queue | Registration approval, enrollment approval workflows |
+| Audit log viewer | Admin: browse login/role/enrollment change events |
+| System reports | User registration trends, course completion rates, engagement metrics |
+| Bulk enrollment | Batch enroll/unenroll multiple users in courses |
 
-### Phase 4: Polish & Production (Week 7-8)
+### Phase 6: Polish & Production (Week 11-12)
 
 | Task | Description |
 |------|-------------|
-| i18n | Thai + English translations |
-| Responsive design | Mobile and tablet optimization |
-| Accessibility | WCAG AA compliance audit |
-| Performance | Bundle optimization, caching strategy |
-| Testing | Unit tests, integration tests, E2E tests |
-| Deployment | Amplify Hosting or S3+CloudFront setup |
+| i18n | Thai + English translations; Thai Buddhist calendar |
+| Responsive design | Mobile and tablet optimization for all views |
+| Accessibility | WCAG AA audit: keyboard nav, screen reader, color contrast |
+| Performance | Bundle optimization, API caching, image optimization |
+| Testing | Unit tests, integration tests, E2E tests (Playwright) |
+| Deployment | Amplify Hosting or S3+CloudFront setup, CI/CD pipeline |
+| Documentation | User guide, admin guide, API documentation |
 
 ---
 
@@ -1354,6 +1610,18 @@ MOODLE_WS_TOKEN=<admin-level-web-service-token>  # From Secrets Manager
 | **WS Token** | Moodle Web Services Token for REST API access |
 | **MUC** | Moodle Universal Cache |
 | **H5P** | HTML5 Package — interactive content framework |
+| **Competency Framework** | Hierarchical structure defining skills and proficiency levels for a domain |
+| **Learning Plan** | Personalized roadmap of competencies a learner should achieve within a timeframe |
+| **Learning Path** | Ordered sequence of courses guiding a learner through a curriculum |
+| **Plan Template** | Reusable learning plan blueprint that can be assigned to users or cohorts |
+| **Proficiency Scale** | Ordered levels of mastery (e.g., Not Yet → Developing → Competent → Proficient → Expert) |
+| **Cohort** | Named group of users for bulk operations (enrollment, plan assignment) |
+| **Course Outline** | Structured view of course sections, activities, and resources (syllabus) |
+| **RBAC** | Role-Based Access Control — permissions determined by user role |
+| **PDPA** | Personal Data Protection Act — Thailand's data protection regulation |
+| **Open Badges 2.0** | Standard for portable, verifiable digital credentials |
+| **tool_lp** | Moodle's Learning Plans plugin providing competency-based learning management |
+| **core_competency** | Moodle's competency framework API for managing competencies, plans, and templates |
 
 ---
 
