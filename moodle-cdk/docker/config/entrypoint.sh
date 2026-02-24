@@ -186,6 +186,11 @@ else
     echo "[entrypoint] Moodle already installed, skipping CLI install"
 fi
 
+# --- Purge theme cache on startup ---
+# Ensures stale cached CSS/JS with wrong hostnames are regenerated
+echo "[entrypoint] Purging Moodle caches..."
+php /var/www/moodle/html/admin/cli/purge_caches.php 2>&1 || echo "[entrypoint] WARNING: Cache purge failed (may be first boot)"
+
 # Start the Moodle cron runner in the background
 /usr/local/bin/moodle-cron.sh &
 CRON_PID=$!
