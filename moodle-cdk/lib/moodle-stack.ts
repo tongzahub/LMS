@@ -10,6 +10,7 @@ import { LoadBalancer } from './constructs/loadbalancer';
 import { Compute } from './constructs/compute';
 import { Cdn } from './constructs/cdn';
 import { Monitoring } from './constructs/monitoring';
+import { Cognito } from './constructs/cognito';
 
 export interface MoodleStackProps extends cdk.StackProps {
   /** Parameterized configuration for all infrastructure components */
@@ -99,6 +100,12 @@ export class MoodleStack extends cdk.Stack {
       cluster: database.cluster,
       alb: loadBalancer.alb,
       ecsClusterName: `moodle-${config.environment}`,
+      config,
+    });
+
+    // --- 10. Cognito (User Pool, App Client, Triggers) ---
+    new Cognito(this, 'Cognito', {
+      moodleWsTokenSecret: security.secrets.apiKey,
       config,
     });
 

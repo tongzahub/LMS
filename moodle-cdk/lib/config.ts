@@ -16,6 +16,7 @@ export interface MoodleConfig {
   maxEcpu: number;
   maxCacheDataGb: number;
   opcacheMemory: number;
+  cognitoDomainPrefix: string;
   costAllocationTags: Record<string, string>;
 }
 
@@ -118,6 +119,7 @@ export function loadConfig(app: cdk.App): MoodleConfig {
     maxEcpu: app.node.tryGetContext('moodle:maxEcpu') ?? 100,
     maxCacheDataGb: app.node.tryGetContext('moodle:maxCacheDataGb') ?? 10,
     opcacheMemory: app.node.tryGetContext('moodle:opcacheMemory') ?? 512,
+    cognitoDomainPrefix: app.node.tryGetContext('moodle:cognitoDomainPrefix') ?? `ecv-lms-${app.node.tryGetContext('moodle:environment') ?? 'production'}`,
     costAllocationTags: app.node.tryGetContext('moodle:costAllocationTags') ?? {
       Project: 'MoodleLMS',
       Environment: app.node.tryGetContext('moodle:environment') ?? 'production',

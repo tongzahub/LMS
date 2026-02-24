@@ -24,7 +24,8 @@
       "Bash(head:*)",
       "Bash(\"/mnt/c/Program Files/Amazon/AWSCLIV2/aws.exe\" cloudformation:*)",
       "Bash(npx tsc:*)",
-      "Bash(npx cdk:*)"
+      "Bash(npx cdk:*)",
+      "Bash(ls:*)"
     ]
   }
 }
