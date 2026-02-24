@@ -41,6 +41,14 @@ export class WafStack extends cdk.Stack {
             managedRuleGroupStatement: {
               vendorName: 'AWS',
               name: 'AWSManagedRulesCommonRuleSet',
+              excludedRules: [
+                // SizeRestrictions_BODY has an 8KB limit that blocks Moodle file uploads
+                { name: 'SizeRestrictions_BODY' },
+                // CrossSiteScripting_BODY can false-positive on multipart form data
+                { name: 'CrossSiteScripting_BODY' },
+                // NoUserAgent_HEADER blocks requests without User-Agent (some AJAX calls)
+                { name: 'NoUserAgent_HEADER' },
+              ],
             },
           },
           visibilityConfig: {
