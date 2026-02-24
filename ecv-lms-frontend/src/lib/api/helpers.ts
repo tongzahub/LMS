@@ -2,6 +2,9 @@ import { NextResponse } from 'next/server';
 import { JwtError, RoleError } from '@/lib/auth/jwt-verifier';
 import { MoodleClientError } from '@/lib/moodle/client';
 
+/** Whether the server is running in demo mode */
+export const isServerDemoMode = process.env.NEXT_PUBLIC_DEMO_MODE === 'true';
+
 /** Security headers applied to every BFF response */
 const SECURITY_HEADERS: Record<string, string> = {
   'Content-Security-Policy': "default-src 'self'; frame-ancestors 'none'",

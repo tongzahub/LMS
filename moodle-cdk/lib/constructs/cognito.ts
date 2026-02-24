@@ -1,5 +1,6 @@
 import * as cdk from 'aws-cdk-lib';
 import * as cognito from 'aws-cdk-lib/aws-cognito';
+import * as iam from 'aws-cdk-lib/aws-iam';
 import * as secretsmanager from 'aws-cdk-lib/aws-secretsmanager';
 import { Construct } from 'constructs';
 import { MoodleConfig } from '../config';
@@ -14,6 +15,8 @@ export class Cognito extends Construct {
   public readonly userPool: cognito.UserPool;
   public readonly userPoolClient: cognito.UserPoolClient;
   public readonly userPoolDomain: cognito.UserPoolDomain;
+  public readonly identityPool: cognito.CfnIdentityPool;
+  public readonly authenticatedRole: iam.Role;
 
   constructor(scope: Construct, id: string, props: CognitoProps) {
     super(scope, id);
@@ -133,6 +136,43 @@ export class Cognito extends Construct {
       triggers.customMessage,
     );
 
+    // --- Identity Pool (for Amplify Storage / S3 access) ---
+    this.identityPool = new cognito.CfnIdentityPool(this, 'IdentityPool', {
+      identityPoolName: `moodle_${config.environment}_identity`,
+      allowUnauthenticatedIdentities: false,
+      cognitoIdentityProviders: [
+        {
+          clientId: this.userPoolClient.userPoolClientId,
+          providerName: this.userPool.userPoolProviderName,
+        },
+      ],
+    });
+
+    // Authenticated role — allows S3 uploads to user-scoped prefixes
+    this.authenticatedRole = new iam.Role(this, 'AuthenticatedRole', {
+      roleName: `moodle-${config.environment}-cognito-auth`,
+      assumedBy: new iam.FederatedPrincipal(
+        'cognito-identity.amazonaws.com',
+        {
+          StringEquals: {
+            'cognito-identity.amazonaws.com:aud': this.identityPool.ref,
+          },
+          'ForAnyValue:StringLike': {
+            'cognito-identity.amazonaws.com:amr': 'authenticated',
+          },
+        },
+        'sts:AssumeRoleWithWebIdentity',
+      ),
+    });
+
+    // Attach Identity Pool role mapping
+    new cognito.CfnIdentityPoolRoleAttachment(this, 'IdentityPoolRoles', {
+      identityPoolId: this.identityPool.ref,
+      roles: {
+        authenticated: this.authenticatedRole.roleArn,
+      },
+    });
+
     // --- CloudFormation Outputs ---
     new cdk.CfnOutput(this, 'UserPoolId', {
       value: this.userPool.userPoolId,
@@ -147,6 +187,11 @@ export class Cognito extends Construct {
     new cdk.CfnOutput(this, 'UserPoolDomainName', {
       value: `${config.cognitoDomainPrefix}.auth.${cdk.Stack.of(this).region}.amazoncognito.com`,
       description: 'Cognito User Pool Domain',
+    });
+
+    new cdk.CfnOutput(this, 'IdentityPoolId', {
+      value: this.identityPool.ref,
+      description: 'Cognito Identity Pool ID (for Amplify Storage)',
     });
   }
 }

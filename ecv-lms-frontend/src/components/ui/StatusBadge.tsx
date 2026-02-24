@@ -9,13 +9,13 @@ export interface StatusBadgeProps {
 }
 
 const statusStyles: Record<BadgeStatus, string> = {
-  active: 'bg-green-100 text-green-700',
-  inactive: 'bg-gray-100 text-gray-600',
-  pending: 'bg-yellow-100 text-yellow-700',
-  success: 'bg-green-100 text-green-700',
-  error: 'bg-red-100 text-red-700',
-  warning: 'bg-yellow-100 text-yellow-700',
-  draft: 'bg-gray-100 text-gray-600',
+  active: 'bg-green-50 text-green-700 ring-green-600/10',
+  inactive: 'bg-gray-50 text-gray-600 ring-gray-500/10',
+  pending: 'bg-amber-50 text-amber-700 ring-amber-600/10',
+  success: 'bg-green-50 text-green-700 ring-green-600/10',
+  error: 'bg-red-50 text-red-700 ring-red-600/10',
+  warning: 'bg-amber-50 text-amber-700 ring-amber-600/10',
+  draft: 'bg-gray-50 text-gray-600 ring-gray-500/10',
 };
 
 const defaultLabels: Record<BadgeStatus, string> = {
@@ -33,7 +33,7 @@ function StatusBadge({ status, label, className = '' }: StatusBadgeProps) {
 
   return (
     <span
-      className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${statusStyles[status]} ${className}`}
+      className={`inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-semibold ring-1 ring-inset ${statusStyles[status]} ${className}`}
       role="status"
       aria-label={displayLabel}
     >

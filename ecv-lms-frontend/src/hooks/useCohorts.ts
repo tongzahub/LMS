@@ -1,5 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiFetch } from '@/lib/api/fetch';
+import { isDemoMode } from '@/lib/demo';
+import { MOCK_COHORTS } from '@/lib/mock';
 
 export interface Cohort {
   id: number;
@@ -14,10 +16,23 @@ export interface CohortMember {
 }
 
 export function useCohorts() {
-  return useQuery<Cohort[]>({
+  const demoQuery = useQuery<Cohort[]>({
+    queryKey: ['cohorts', 'demo'],
+    queryFn: async () => {
+      await new Promise((r) => setTimeout(r, 200));
+      return MOCK_COHORTS;
+    },
+    enabled: isDemoMode,
+    staleTime: Infinity,
+  });
+
+  const apiQuery = useQuery<Cohort[]>({
     queryKey: ['cohorts'],
     queryFn: () => apiFetch<Cohort[]>('/api/moodle/cohorts'),
+    enabled: !isDemoMode,
   });
+
+  return isDemoMode ? demoQuery : apiQuery;
 }
 
 export function useCreateCohort() {

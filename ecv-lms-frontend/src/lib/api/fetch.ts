@@ -1,14 +1,16 @@
-import { getAccessToken } from '@/lib/auth/session';
+import { getIdToken } from '@/lib/auth/session';
 
 /**
  * Authenticated fetch wrapper for BFF API routes.
- * Automatically attaches the Bearer JWT from the current Cognito session.
+ * Sends the Cognito ID token as Bearer JWT. The ID token contains
+ * user attributes (custom:moodle_user_id) and cognito:groups, which
+ * BFF routes need to proxy requests to Moodle.
  */
 export async function apiFetch<T>(
   path: string,
   options: RequestInit = {},
 ): Promise<T> {
-  const token = await getAccessToken();
+  const token = await getIdToken();
   if (!token) {
     throw new Error('Not authenticated');
   }

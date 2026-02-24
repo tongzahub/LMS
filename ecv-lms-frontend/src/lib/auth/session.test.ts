@@ -41,7 +41,7 @@ describe('isSessionValid', () => {
   it('returns true when token is not expired', async () => {
     const futureExp = Math.floor(Date.now() / 1000) + 3600;
     mockFetchAuthSession.mockResolvedValue({
-      tokens: { accessToken: { payload: { exp: futureExp } } },
+      tokens: { idToken: { payload: { exp: futureExp } } },
     } as never);
     expect(await isSessionValid()).toBe(true);
   });
@@ -49,7 +49,7 @@ describe('isSessionValid', () => {
   it('returns false when token is expired', async () => {
     const pastExp = Math.floor(Date.now() / 1000) - 3600;
     mockFetchAuthSession.mockResolvedValue({
-      tokens: { accessToken: { payload: { exp: pastExp } } },
+      tokens: { idToken: { payload: { exp: pastExp } } },
     } as never);
     expect(await isSessionValid()).toBe(false);
   });

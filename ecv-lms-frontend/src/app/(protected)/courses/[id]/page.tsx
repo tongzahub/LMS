@@ -5,7 +5,10 @@ import { useCourseDetail, useCourseContents } from '@/hooks/useCourses';
 import { useI18n } from '@/contexts/I18nContext';
 import { CourseDetailHero, CourseDetailHeroSkeleton } from '@/components/courses/CourseDetailHero';
 import { CourseOutline } from '@/components/courses/CourseOutline';
+import { Breadcrumbs } from '@/components/ui/Breadcrumbs';
 import { Button } from '@/components/ui/Button';
+import { EmptyState } from '@/components/ui/EmptyState';
+import { AlertCircle } from 'lucide-react';
 import Link from 'next/link';
 
 export default function CourseDetailPage() {
@@ -21,25 +24,27 @@ export default function CourseDetailPage() {
 
   if (courseError) {
     return (
-      <div className="text-center py-12">
-        <p className="text-gray-500">{t('common.error')}</p>
-        <Button variant="outline" size="sm" className="mt-2" onClick={() => window.location.reload()}>
-          {t('common.retry')}
-        </Button>
+      <div className="max-w-4xl mx-auto">
+        <EmptyState
+          icon={AlertCircle}
+          title={t('common.error')}
+          description="Failed to load course details"
+          actionLabel={t('common.retry')}
+          onAction={() => window.location.reload()}
+        />
       </div>
     );
   }
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
+    <div className="max-w-4xl mx-auto space-y-6 animate-fade-in">
       {/* Breadcrumb */}
-      <nav className="text-sm text-gray-500" aria-label="Breadcrumb">
-        <Link href="/courses" className="hover:text-blue-600 transition-colors">
-          {t('courses.catalog')}
-        </Link>
-        <span className="mx-2">/</span>
-        <span className="text-gray-900">{course?.fullname ?? t('courses.detail')}</span>
-      </nav>
+      <Breadcrumbs
+        items={[
+          { label: t('courses.catalog'), href: '/courses' },
+          { label: course?.fullname ?? t('courses.detail') },
+        ]}
+      />
 
       {/* Hero */}
       {courseLoading || !course ? (

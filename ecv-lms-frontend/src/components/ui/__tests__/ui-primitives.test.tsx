@@ -114,7 +114,7 @@ describe('StatusBadge', () => {
 
   it('applies correct style for error status', () => {
     render(<StatusBadge status="error" />);
-    expect(screen.getByRole('status').className).toContain('bg-red-100');
+    expect(screen.getByRole('status').className).toContain('bg-red-50');
   });
 });
 

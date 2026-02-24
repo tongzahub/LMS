@@ -11,14 +11,15 @@ import {
   Clock,
   ChevronRight,
   ChevronDown,
+  BookOpen,
 } from 'lucide-react';
 import { useCourses, type Course } from '@/hooks/useCourses';
 import { useI18n } from '@/contexts/I18nContext';
 import { Card } from '@/components/ui/Card';
 import { Input } from '@/components/ui/Input';
-import { Button } from '@/components/ui/Button';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { StatusBadge } from '@/components/ui/StatusBadge';
+import { EmptyState } from '@/components/ui/EmptyState';
 import {
   filterCourses,
   sortCourses,
@@ -27,6 +28,7 @@ import {
   type CourseCategory,
   type SortOption,
 } from '@/lib/courses/filter';
+import { MOCK_CATEGORIES } from '@/lib/mock';
 
 // --- Category tree sidebar ---
 
@@ -49,8 +51,8 @@ function CategoryTreeItem({
     <li>
       <button
         type="button"
-        className={`flex items-center w-full text-left text-sm py-1.5 px-2 rounded hover:bg-gray-100 transition-colors ${
-          isSelected ? 'bg-blue-50 text-blue-700 font-medium' : 'text-gray-700'
+        className={`flex items-center w-full text-left text-sm py-1.5 px-2 rounded-lg hover:bg-gray-100 transition-colors ${
+          isSelected ? 'bg-brand-50 text-brand-700 font-medium' : 'text-gray-600'
         }`}
         style={{ paddingLeft: `${depth * 16 + 8}px` }}
         onClick={() => onSelect(isSelected ? null : category.id)}
@@ -78,7 +80,7 @@ function CategoryTreeItem({
         )}
         {!hasChildren && <span className="w-3.5 mr-1 shrink-0" />}
         <span className="truncate">{category.name}</span>
-        <span className="ml-auto text-xs text-gray-400">{category.courseCount}</span>
+        <span className="ml-auto text-xs text-gray-400 tabular-nums">{category.courseCount}</span>
       </button>
       {hasChildren && expanded && (
         <ul role="group">
@@ -111,25 +113,27 @@ function CatalogCourseCard({ course }: { course: Course }) {
 
   return (
     <Link href={`/courses/${course.id}`}>
-      <Card padding="none" className="overflow-hidden hover:shadow-md transition-shadow h-full flex flex-col">
-        <div className="relative h-36 bg-gray-100">
+      <Card padding="none" hoverable className="overflow-hidden h-full flex flex-col group">
+        <div className="relative aspect-video bg-gray-100 overflow-hidden">
           {course.imageUrl ? (
             <Image
               src={course.imageUrl}
               alt={course.fullname}
               fill
-              className="object-cover"
+              className="object-cover transition-transform duration-300 group-hover:scale-105"
               sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 33vw"
             />
           ) : (
-            <div className="flex items-center justify-center h-full bg-blue-50">
-              <span className="text-3xl text-blue-300" aria-hidden="true">📚</span>
+            <div className="flex items-center justify-center h-full bg-gradient-to-br from-brand-50 to-indigo-50">
+              <BookOpen className="w-8 h-8 text-brand-300" />
             </div>
           )}
         </div>
         <div className="p-4 flex flex-col flex-1">
-          <p className="text-xs text-gray-500 mb-1">{course.categoryName}</p>
-          <h3 className="text-sm font-semibold text-gray-900 line-clamp-2 mb-2">{course.fullname}</h3>
+          <p className="text-[11px] font-medium text-brand-600 uppercase tracking-wide mb-1">{course.categoryName}</p>
+          <h3 className="text-sm font-semibold text-gray-900 line-clamp-2 mb-1 leading-snug group-hover:text-brand-700 transition-colors">
+            {course.fullname}
+          </h3>
           <p className="text-xs text-gray-500 mb-3">{course.instructorName}</p>
           <div className="mt-auto flex items-center gap-3 text-xs text-gray-500">
             {course.difficulty && (
@@ -144,7 +148,7 @@ function CatalogCourseCard({ course }: { course: Course }) {
                 {course.duration}
               </span>
             )}
-            <span className="flex items-center gap-1 ml-auto">
+            <span className="flex items-center gap-1 ml-auto tabular-nums">
               <Users className="w-3.5 h-3.5" aria-hidden="true" />
               {course.enrolledCount}
             </span>
@@ -162,19 +166,19 @@ function CatalogCourseRow({ course }: { course: Course }) {
 
   return (
     <Link href={`/courses/${course.id}`}>
-      <Card padding="sm" className="hover:shadow-md transition-shadow flex items-center gap-4">
-        <div className="relative w-20 h-14 shrink-0 rounded overflow-hidden bg-gray-100">
+      <Card padding="sm" hoverable className="flex items-center gap-4">
+        <div className="relative w-24 h-16 shrink-0 rounded-lg overflow-hidden bg-gray-100">
           {course.imageUrl ? (
             <Image
               src={course.imageUrl}
               alt={course.fullname}
               fill
               className="object-cover"
-              sizes="80px"
+              sizes="96px"
             />
           ) : (
-            <div className="flex items-center justify-center h-full bg-blue-50">
-              <span className="text-lg text-blue-300" aria-hidden="true">📚</span>
+            <div className="flex items-center justify-center h-full bg-gradient-to-br from-brand-50 to-indigo-50">
+              <BookOpen className="w-5 h-5 text-brand-300" />
             </div>
           )}
         </div>
@@ -185,14 +189,14 @@ function CatalogCourseRow({ course }: { course: Course }) {
           </p>
         </div>
         <div className="hidden sm:flex items-center gap-4 text-xs text-gray-500 shrink-0">
-          {course.difficulty && <span>{t(`courses.${course.difficulty}`)}</span>}
+          {course.difficulty && <span className="font-medium">{t(`courses.${course.difficulty}`)}</span>}
           {course.duration && (
             <span className="flex items-center gap-1">
               <Clock className="w-3.5 h-3.5" aria-hidden="true" />
               {course.duration}
             </span>
           )}
-          <span className="flex items-center gap-1">
+          <span className="flex items-center gap-1 tabular-nums">
             <Users className="w-3.5 h-3.5" aria-hidden="true" />
             {course.enrolledCount}
           </span>
@@ -203,9 +207,6 @@ function CatalogCourseRow({ course }: { course: Course }) {
 }
 
 // --- Main CourseCatalog component ---
-
-// Placeholder categories — in production these come from an API hook
-const MOCK_CATEGORIES: CourseCategory[] = [];
 
 export function CourseCatalog() {
   const { t } = useI18n();
@@ -232,14 +233,20 @@ export function CourseCatalog() {
     setFilters((prev) => ({ ...prev, [key]: value || undefined }));
   };
 
+  const activeFilterCount = Object.values(filters).filter(Boolean).length;
+
   // --- Loading state ---
   if (isLoading) {
     return (
-      <div className="space-y-4">
+      <div className="space-y-4 animate-fade-in">
         <Skeleton variant="rectangular" height="48px" />
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {Array.from({ length: 6 }).map((_, i) => (
-            <Skeleton key={i} variant="rectangular" height="240px" />
+            <div key={i} className="space-y-3">
+              <Skeleton variant="rectangular" height="160px" />
+              <Skeleton variant="text" width="80%" />
+              <Skeleton variant="text" width="50%" />
+            </div>
           ))}
         </div>
       </div>
@@ -248,17 +255,18 @@ export function CourseCatalog() {
 
   if (isError) {
     return (
-      <div className="text-center py-12">
-        <p className="text-gray-500">{t('common.error')}</p>
-        <Button variant="outline" size="sm" className="mt-2" onClick={() => window.location.reload()}>
-          {t('common.retry')}
-        </Button>
-      </div>
+      <EmptyState
+        icon={BookOpen}
+        title={t('common.error')}
+        description="Failed to load courses"
+        actionLabel={t('common.retry')}
+        onAction={() => window.location.reload()}
+      />
     );
   }
 
   return (
-    <div className="flex flex-col lg:flex-row gap-6">
+    <div className="flex flex-col lg:flex-row gap-6 animate-fade-in">
       {/* Category sidebar — hidden on mobile */}
       {categories.length > 0 && (
         <aside className="hidden lg:block w-56 shrink-0">
@@ -268,8 +276,8 @@ export function CourseCatalog() {
               <li>
                 <button
                   type="button"
-                  className={`w-full text-left text-sm py-1.5 px-2 rounded hover:bg-gray-100 ${
-                    !filters.categoryId ? 'bg-blue-50 text-blue-700 font-medium' : 'text-gray-700'
+                  className={`w-full text-left text-sm py-1.5 px-2 rounded-lg hover:bg-gray-100 transition-colors ${
+                    !filters.categoryId ? 'bg-brand-50 text-brand-700 font-medium' : 'text-gray-600'
                   }`}
                   onClick={() => updateFilter('categoryId', null)}
                 >
@@ -291,6 +299,12 @@ export function CourseCatalog() {
 
       {/* Main content */}
       <div className="flex-1 min-w-0">
+        {/* Page header */}
+        <div className="mb-6">
+          <h1 className="text-2xl font-bold text-gray-900 tracking-tight">{t('courses.catalog')}</h1>
+          <p className="text-sm text-gray-500 mt-0.5">Browse and discover courses</p>
+        </div>
+
         {/* Toolbar: search, filters, sort, view toggle */}
         <div className="flex flex-col sm:flex-row gap-3 mb-4">
           {/* Search */}
@@ -309,7 +323,7 @@ export function CourseCatalog() {
           <div className="flex flex-wrap gap-2">
             {difficultyOptions.length > 0 && (
               <select
-                className="rounded-lg border border-gray-300 text-sm px-3 py-2 bg-white focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                className="rounded-lg border border-gray-200 text-sm px-3 py-2 bg-white focus:ring-2 focus:ring-brand-500 focus:border-brand-500 focus:outline-none transition-shadow"
                 value={filters.difficulty ?? ''}
                 onChange={(e) => updateFilter('difficulty', e.target.value || null)}
                 aria-label={t('courses.difficulty')}
@@ -323,7 +337,7 @@ export function CourseCatalog() {
 
             {languageOptions.length > 0 && (
               <select
-                className="rounded-lg border border-gray-300 text-sm px-3 py-2 bg-white focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                className="rounded-lg border border-gray-200 text-sm px-3 py-2 bg-white focus:ring-2 focus:ring-brand-500 focus:border-brand-500 focus:outline-none transition-shadow"
                 value={filters.language ?? ''}
                 onChange={(e) => updateFilter('language', e.target.value || null)}
                 aria-label={t('courses.language')}
@@ -337,7 +351,7 @@ export function CourseCatalog() {
 
             {durationOptions.length > 0 && (
               <select
-                className="rounded-lg border border-gray-300 text-sm px-3 py-2 bg-white focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                className="rounded-lg border border-gray-200 text-sm px-3 py-2 bg-white focus:ring-2 focus:ring-brand-500 focus:border-brand-500 focus:outline-none transition-shadow"
                 value={filters.duration ?? ''}
                 onChange={(e) => updateFilter('duration', e.target.value || null)}
                 aria-label={t('courses.duration')}
@@ -350,7 +364,7 @@ export function CourseCatalog() {
             )}
 
             <select
-              className="rounded-lg border border-gray-300 text-sm px-3 py-2 bg-white focus:ring-2 focus:ring-blue-500 focus:outline-none"
+              className="rounded-lg border border-gray-200 text-sm px-3 py-2 bg-white focus:ring-2 focus:ring-brand-500 focus:border-brand-500 focus:outline-none transition-shadow"
               value={filters.enrollmentStatus ?? ''}
               onChange={(e) => updateFilter('enrollmentStatus', (e.target.value as 'open' | 'closed') || null)}
               aria-label={t('common.status')}
@@ -364,12 +378,22 @@ export function CourseCatalog() {
 
         {/* Sort + view toggle + count */}
         <div className="flex items-center justify-between mb-4">
-          <p className="text-sm text-gray-500">
-            {t('courses.courseCount').replace('{{count}}', String(displayedCourses.length))}
-          </p>
+          <div className="flex items-center gap-2">
+            <p className="text-sm text-gray-500">
+              {t('courses.courseCount').replace('{{count}}', String(displayedCourses.length))}
+            </p>
+            {activeFilterCount > 0 && (
+              <button
+                onClick={() => setFilters({})}
+                className="text-xs text-brand-600 hover:text-brand-700 font-medium transition-colors"
+              >
+                Clear filters
+              </button>
+            )}
+          </div>
           <div className="flex items-center gap-2">
             <select
-              className="rounded-lg border border-gray-300 text-sm px-3 py-1.5 bg-white focus:ring-2 focus:ring-blue-500 focus:outline-none"
+              className="rounded-lg border border-gray-200 text-sm px-3 py-1.5 bg-white focus:ring-2 focus:ring-brand-500 focus:outline-none transition-shadow"
               value={sort}
               onChange={(e) => setSort(e.target.value as SortOption)}
               aria-label={t('courses.sortBy')}
@@ -378,32 +402,40 @@ export function CourseCatalog() {
               <option value="popular">{t('courses.sortPopular')}</option>
               <option value="alphabetical">{t('courses.sortAlphabetical')}</option>
             </select>
-            <Button
-              variant={viewMode === 'grid' ? 'primary' : 'ghost'}
-              size="sm"
-              onClick={() => setViewMode('grid')}
-              aria-label={t('courses.gridView')}
-              aria-pressed={viewMode === 'grid'}
-            >
-              <Grid3X3 className="w-4 h-4" />
-            </Button>
-            <Button
-              variant={viewMode === 'list' ? 'primary' : 'ghost'}
-              size="sm"
-              onClick={() => setViewMode('list')}
-              aria-label={t('courses.listView')}
-              aria-pressed={viewMode === 'list'}
-            >
-              <List className="w-4 h-4" />
-            </Button>
+            <div className="flex items-center bg-gray-100 rounded-lg p-0.5">
+              <button
+                onClick={() => setViewMode('grid')}
+                className={`p-1.5 rounded-md transition-all ${
+                  viewMode === 'grid' ? 'bg-white shadow-sm text-gray-900' : 'text-gray-500 hover:text-gray-700'
+                }`}
+                aria-label={t('courses.gridView')}
+                aria-pressed={viewMode === 'grid'}
+              >
+                <Grid3X3 className="w-4 h-4" />
+              </button>
+              <button
+                onClick={() => setViewMode('list')}
+                className={`p-1.5 rounded-md transition-all ${
+                  viewMode === 'list' ? 'bg-white shadow-sm text-gray-900' : 'text-gray-500 hover:text-gray-700'
+                }`}
+                aria-label={t('courses.listView')}
+                aria-pressed={viewMode === 'list'}
+              >
+                <List className="w-4 h-4" />
+              </button>
+            </div>
           </div>
         </div>
 
         {/* Course listing */}
         {displayedCourses.length === 0 ? (
-          <div className="text-center py-16">
-            <p className="text-gray-500">{t('courses.noCourses')}</p>
-          </div>
+          <EmptyState
+            icon={Search}
+            title={t('courses.noCourses')}
+            description="Try adjusting your filters or search terms"
+            actionLabel="Clear filters"
+            onAction={() => setFilters({})}
+          />
         ) : viewMode === 'grid' ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {displayedCourses.map((course) => (

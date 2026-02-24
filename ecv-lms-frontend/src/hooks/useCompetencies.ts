@@ -1,5 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiFetch } from '@/lib/api/fetch';
+import { isDemoMode } from '@/lib/demo';
+import { MOCK_FRAMEWORKS, MOCK_COMPETENCIES, MOCK_TEMPLATES } from '@/lib/mock';
 
 export interface CompetencyFramework {
   id: number;
@@ -65,26 +67,65 @@ export interface AssignTemplateParams {
 }
 
 export function useFrameworks() {
-  return useQuery<CompetencyFramework[]>({
+  const demoQuery = useQuery<CompetencyFramework[]>({
+    queryKey: ['competencyFrameworks', 'demo'],
+    queryFn: async () => {
+      await new Promise((r) => setTimeout(r, 200));
+      return MOCK_FRAMEWORKS;
+    },
+    enabled: isDemoMode,
+    staleTime: Infinity,
+  });
+
+  const apiQuery = useQuery<CompetencyFramework[]>({
     queryKey: ['competencyFrameworks'],
     queryFn: () => apiFetch<CompetencyFramework[]>('/api/moodle/competencies'),
+    enabled: !isDemoMode,
   });
+
+  return isDemoMode ? demoQuery : apiQuery;
 }
 
 export function useFrameworkDetail(frameworkId: number) {
-  return useQuery<CompetencyFramework>({
+  const demoQuery = useQuery<CompetencyFramework>({
+    queryKey: ['competencyFramework', 'demo', frameworkId],
+    queryFn: async () => {
+      await new Promise((r) => setTimeout(r, 200));
+      const found = MOCK_FRAMEWORKS.find((f) => f.id === frameworkId);
+      if (!found) throw new Error(`Framework ${frameworkId} not found`);
+      return found;
+    },
+    enabled: isDemoMode && frameworkId > 0,
+    staleTime: Infinity,
+  });
+
+  const apiQuery = useQuery<CompetencyFramework>({
     queryKey: ['competencyFramework', frameworkId],
     queryFn: () => apiFetch<CompetencyFramework>(`/api/moodle/competencies?frameworkId=${frameworkId}`),
-    enabled: frameworkId > 0,
+    enabled: !isDemoMode && frameworkId > 0,
   });
+
+  return isDemoMode ? demoQuery : apiQuery;
 }
 
 export function useCompetencies(frameworkId: number) {
-  return useQuery<Competency[]>({
+  const demoQuery = useQuery<Competency[]>({
+    queryKey: ['competencies', 'demo', frameworkId],
+    queryFn: async () => {
+      await new Promise((r) => setTimeout(r, 200));
+      return MOCK_COMPETENCIES[frameworkId] ?? [];
+    },
+    enabled: isDemoMode && frameworkId > 0,
+    staleTime: Infinity,
+  });
+
+  const apiQuery = useQuery<Competency[]>({
     queryKey: ['competencies', frameworkId],
     queryFn: () => apiFetch<Competency[]>(`/api/moodle/competencies?frameworkId=${frameworkId}`),
-    enabled: frameworkId > 0,
+    enabled: !isDemoMode && frameworkId > 0,
   });
+
+  return isDemoMode ? demoQuery : apiQuery;
 }
 
 export function useCreateCompetency() {
@@ -104,10 +145,23 @@ export function useCreateCompetency() {
 }
 
 export function useTemplates() {
-  return useQuery<PlanTemplate[]>({
+  const demoQuery = useQuery<PlanTemplate[]>({
+    queryKey: ['planTemplates', 'demo'],
+    queryFn: async () => {
+      await new Promise((r) => setTimeout(r, 200));
+      return MOCK_TEMPLATES;
+    },
+    enabled: isDemoMode,
+    staleTime: Infinity,
+  });
+
+  const apiQuery = useQuery<PlanTemplate[]>({
     queryKey: ['planTemplates'],
     queryFn: () => apiFetch<PlanTemplate[]>('/api/moodle/competencies/templates'),
+    enabled: !isDemoMode,
   });
+
+  return isDemoMode ? demoQuery : apiQuery;
 }
 
 export function useAssignTemplate() {

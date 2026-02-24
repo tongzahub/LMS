@@ -4,6 +4,7 @@ import { useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { Skeleton } from '@/components/ui/Skeleton';
+import { isDemoMode } from '@/lib/demo';
 import type { UserRole } from '@/lib/auth/types';
 
 export interface AuthGuardProps {
@@ -17,6 +18,7 @@ export function AuthGuard({ children, allowedRoles }: AuthGuardProps) {
   const pathname = usePathname();
 
   useEffect(() => {
+    if (isDemoMode) return;
     if (isLoading) return;
     if (!isAuthenticated) {
       router.replace(`/login?redirect=${encodeURIComponent(pathname)}`);
@@ -33,7 +35,7 @@ export function AuthGuard({ children, allowedRoles }: AuthGuardProps) {
     );
   }
 
-  if (!isAuthenticated) {
+  if (!isDemoMode && !isAuthenticated) {
     return null;
   }
 

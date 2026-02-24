@@ -2,10 +2,11 @@ import React from 'react';
 
 export interface CardProps extends React.HTMLAttributes<HTMLDivElement> {
   padding?: 'none' | 'sm' | 'md' | 'lg';
+  hoverable?: boolean;
 }
 
 const Card = React.forwardRef<HTMLDivElement, CardProps>(
-  ({ padding = 'md', className = '', children, ...props }, ref) => {
+  ({ padding = 'md', hoverable = false, className = '', children, ...props }, ref) => {
     const paddings: Record<string, string> = {
       none: '',
       sm: 'p-3',
@@ -16,7 +17,11 @@ const Card = React.forwardRef<HTMLDivElement, CardProps>(
     return (
       <div
         ref={ref}
-        className={`bg-white rounded-lg border border-gray-200 shadow-sm ${paddings[padding]} ${className}`}
+        className={`bg-white rounded-xl border border-gray-200/80 shadow-sm ${paddings[padding]} ${
+          hoverable
+            ? 'transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5 hover:border-gray-300/80 cursor-pointer'
+            : ''
+        } ${className}`}
         {...props}
       >
         {children}

@@ -9,7 +9,7 @@ vi.mock('next/navigation', () => ({
 }));
 
 // Mock auth context
-let mockRole: any = 'STUDENT';
+let mockRole: string | null = 'STUDENT';
 vi.mock('@/contexts/AuthContext', () => ({
   useAuth: () => ({ role: mockRole }),
 }));

@@ -2,9 +2,14 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { Navbar } from '../Navbar';
 
+// Mock NotificationBell to avoid QueryClient dependency
+vi.mock('@/components/dashboard/NotificationBell', () => ({
+  NotificationBell: () => <button aria-label="Notifications">bell</button>,
+}));
+
 // Mock auth context
 const mockSignOut = vi.fn();
-let mockAuth: any = {
+let mockAuth: Record<string, unknown> = {
   user: {
     givenName: 'John',
     familyName: 'Doe',

@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { AuthGuard } from '../AuthGuard';
+import type { AuthContextValue } from '@/contexts/AuthContext';
 
 // Mock next/navigation
 const mockReplace = vi.fn();
@@ -13,8 +14,8 @@ vi.mock('next/navigation', () => ({
 
 // Mock auth context — values controlled per test
 let mockAuth = {
-  user: null as any,
-  role: null as any,
+  user: null as AuthContextValue['user'],
+  role: null as AuthContextValue['role'],
   isLoading: false,
   isAuthenticated: false,
   signIn: vi.fn(),

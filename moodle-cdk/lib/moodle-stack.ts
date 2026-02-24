@@ -11,6 +11,7 @@ import { Compute } from './constructs/compute';
 import { Cdn } from './constructs/cdn';
 import { Monitoring } from './constructs/monitoring';
 import { Cognito } from './constructs/cognito';
+import { MediaStorage } from './constructs/media-storage';
 
 export interface MoodleStackProps extends cdk.StackProps {
   /** Parameterized configuration for all infrastructure components */
@@ -103,11 +104,18 @@ export class MoodleStack extends cdk.Stack {
       config,
     });
 
-    // --- 10. Cognito (User Pool, App Client, Triggers) ---
-    new Cognito(this, 'Cognito', {
+    // --- 10. Cognito (User Pool, App Client, Identity Pool, Triggers) ---
+    const cognitoConstruct = new Cognito(this, 'Cognito', {
       moodleWsTokenSecret: security.secrets.apiKey,
       config,
     });
+
+    // --- 11. Media Storage (S3 bucket + CloudFront for video/file uploads) ---
+    const mediaStorage = new MediaStorage(this, 'MediaStorage', { config });
+
+    // Grant authenticated Cognito users S3 upload/download access
+    mediaStorage.bucket.grantReadWrite(cognitoConstruct.authenticatedRole);
+    mediaStorage.kmsKey.grantEncryptDecrypt(cognitoConstruct.authenticatedRole);
 
     // --- Cost-allocation tags ---
     for (const [key, value] of Object.entries(config.costAllocationTags)) {

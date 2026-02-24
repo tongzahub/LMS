@@ -9,7 +9,10 @@ import { useI18n } from '@/contexts/I18nContext';
 import { useCreateCourse, type CreateCourseParams } from '@/hooks/useCourses';
 import { useFrameworks, useCompetencies } from '@/hooks/useCompetencies';
 import { CourseMetadataForm, type CourseMetadataValues } from './CourseMetadataForm';
-import { Plus, Trash2, GripVertical } from 'lucide-react';
+import { VideoUploader } from '@/components/media/VideoUploader';
+import { MediaCard } from '@/components/media/MediaCard';
+import type { MediaItem } from '@/lib/media/types';
+import { Plus, Trash2, GripVertical, Film } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 interface SectionDraft {
@@ -35,6 +38,7 @@ const WIZARD_STEPS = [
   { label: 'Metadata' },
   { label: 'Format' },
   { label: 'Sections' },
+  { label: 'Videos' },
   { label: 'Competencies' },
   { label: 'Publish' },
 ];
@@ -63,6 +67,8 @@ export function CourseCreationWizard() {
     type: 'all_activities',
     value: '',
   });
+  const [uploadedVideos, setUploadedVideos] = useState<MediaItem[]>([]);
+  const [showVideoUploader, setShowVideoUploader] = useState(false);
 
   const { data: frameworks } = useFrameworks();
   const { data: competencies } = useCompetencies(selectedFrameworkId);
@@ -210,6 +216,57 @@ export function CourseCreationWizard() {
       case 3:
         return (
           <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-medium text-gray-700">Course Videos</p>
+                <p className="text-xs text-gray-500 mt-0.5">Upload video lessons for this course</p>
+              </div>
+              <Button variant="outline" size="sm" onClick={() => setShowVideoUploader(true)}>
+                <Plus className="h-4 w-4 mr-1" aria-hidden="true" />
+                Add Video
+              </Button>
+            </div>
+
+            {uploadedVideos.length > 0 ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                {uploadedVideos.map((video) => (
+                  <MediaCard
+                    key={video.id}
+                    item={video}
+                    onDelete={(item) => setUploadedVideos((prev) => prev.filter((v) => v.id !== item.id))}
+                  />
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-8 border-2 border-dashed border-gray-200 rounded-xl">
+                <Film className="h-8 w-8 text-gray-300 mx-auto mb-2" />
+                <p className="text-sm text-gray-500">No videos added yet</p>
+                <p className="text-xs text-gray-400 mt-1">You can also add videos after creating the course</p>
+              </div>
+            )}
+
+            {showVideoUploader && (
+              <Card padding="md">
+                <VideoUploader
+                  onUploadComplete={(item) => {
+                    setUploadedVideos((prev) => [...prev, item]);
+                    setShowVideoUploader(false);
+                  }}
+                  onCancel={() => setShowVideoUploader(false)}
+                />
+              </Card>
+            )}
+
+            <div className="flex justify-between pt-4">
+              <Button variant="outline" onClick={handleBack}>{t('common.back')}</Button>
+              <Button onClick={handleNext}>{t('common.next')}</Button>
+            </div>
+          </div>
+        );
+
+      case 4:
+        return (
+          <div className="space-y-4">
             <p className="text-sm text-gray-600">{t('courseManagement.mapCompetencies')}</p>
             <div>
               <label htmlFor="framework-select" className="block text-sm font-medium text-gray-700 mb-1">
@@ -249,7 +306,7 @@ export function CourseCreationWizard() {
           </div>
         );
 
-      case 4:
+      case 5:
         return (
           <div className="space-y-6">
             {/* Visibility toggle */}

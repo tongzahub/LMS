@@ -32,3 +32,8 @@ export type { StatusBadgeProps, BadgeStatus } from './StatusBadge';
 
 export { ConfirmDialog } from './ConfirmDialog';
 export type { ConfirmDialogProps } from './ConfirmDialog';
+
+export { StarRating } from './StarRating';
+export { CircularProgress } from './CircularProgress';
+export { EmptyState } from './EmptyState';
+export { Breadcrumbs } from './Breadcrumbs';

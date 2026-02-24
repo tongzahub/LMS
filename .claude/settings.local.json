@@ -25,7 +25,25 @@
       "Bash(\"/mnt/c/Program Files/Amazon/AWSCLIV2/aws.exe\" cloudformation:*)",
       "Bash(npx tsc:*)",
       "Bash(npx cdk:*)",
-      "Bash(ls:*)"
+      "Bash(ls:*)",
+      "WebFetch(domain:lms.ecvth.com)",
+      "WebFetch(domain:about.coursera.org)",
+      "WebFetch(domain:riseapps.co)",
+      "WebFetch(domain:www.lummi.ai)",
+      "WebFetch(domain:www.coursera.org)",
+      "WebFetch(domain:mobbin.com)",
+      "WebFetch(domain:blog.coursera.org)",
+      "WebFetch(domain:support.udemy.com)",
+      "WebFetch(domain:www.wearetenet.com)",
+      "Bash(grep:*)",
+      "Bash(grep SiteSettings:*)",
+      "Bash(cd /mnt/d/Project/LMS/ecv-lms-frontend && node -e \"\nconst path = require\\('path'\\);\n// Quick sanity count checks via grep\nconst fs = require\\('fs'\\);\nconst courses = fs.readFileSync\\('src/lib/mock/courses.ts', 'utf8'\\);\nconst users = fs.readFileSync\\('src/lib/mock/users.ts', 'utf8'\\);\nconst calendar = fs.readFileSync\\('src/lib/mock/calendar.ts', 'utf8'\\);\nconst plans = fs.readFileSync\\('src/lib/mock/learning-plans.ts', 'utf8'\\);\nconst cohorts = fs.readFileSync\\('src/lib/mock/cohorts.ts', 'utf8'\\);\nconst grades = fs.readFileSync\\('src/lib/mock/grades.ts', 'utf8'\\);\nconst comps = fs.readFileSync\\('src/lib/mock/competencies.ts', 'utf8'\\);\n\nconst countOccurrences = \\(str, needle\\) => str.split\\(needle\\).length - 1;\n\nconsole.log\\('Courses \\(id: N\\):',    countOccurrences\\(courses, '  id: '\\)\\);\nconsole.log\\('Users \\(id: N\\):',      countOccurrences\\(users, '  id: '\\)\\);\nconsole.log\\('Calendar events:',    countOccurrences\\(calendar, '  id: '\\)\\);\nconsole.log\\('Learning plans:',     countOccurrences\\(plans, '  id: '\\)\\);\nconsole.log\\('Cohorts:',            countOccurrences\\(cohorts, '  id: '\\)\\);\nconsole.log\\('CourseGrades entries:', countOccurrences\\(grades, 'courseId: '\\)\\);\nconsole.log\\('Frameworks:',         countOccurrences\\(comps, '  id: 1,'\\) + countOccurrences\\(comps, '  id: 2,'\\) + countOccurrences\\(comps, '  id: 3,'\\)\\);\n\" 2>&1)",
+      "Bash(grep Error::*)",
+      "Bash(node:*)",
+      "Bash(python3:*)",
+      "Bash(grep settings:*)",
+      "Bash(timeout 20 npx next:*)",
+      "Bash(npx next:*)"
     ]
   }
 }

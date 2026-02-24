@@ -1,5 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiFetch } from '@/lib/api/fetch';
+import { isDemoMode } from '@/lib/demo';
+import { MOCK_LEARNING_PLANS } from '@/lib/mock';
 
 export interface LearningPlan {
   id: number;
@@ -44,18 +46,86 @@ export interface Evidence {
 }
 
 export function useMyPlans() {
-  return useQuery<LearningPlan[]>({
+  const demoQuery = useQuery<LearningPlan[]>({
+    queryKey: ['learningPlans', 'demo'],
+    queryFn: async () => {
+      await new Promise((r) => setTimeout(r, 200));
+      return MOCK_LEARNING_PLANS;
+    },
+    enabled: isDemoMode,
+    staleTime: Infinity,
+  });
+
+  const apiQuery = useQuery<LearningPlan[]>({
     queryKey: ['learningPlans'],
     queryFn: () => apiFetch<LearningPlan[]>('/api/moodle/learning-plans'),
+    enabled: !isDemoMode,
   });
+
+  return isDemoMode ? demoQuery : apiQuery;
 }
 
 export function usePlanDetail(planId: number) {
-  return useQuery<PlanDetail>({
+  const demoQuery = useQuery<PlanDetail>({
+    queryKey: ['learningPlan', 'demo', planId],
+    queryFn: async () => {
+      await new Promise((r) => setTimeout(r, 200));
+      const plan = MOCK_LEARNING_PLANS.find((p) => p.id === planId);
+      if (!plan) throw new Error(`Plan ${planId} not found`);
+      return {
+        ...plan,
+        competencies: [
+          {
+            competencyId: 1011,
+            competencyName: 'การเขียนโปรแกรมและพัฒนาซอฟต์แวร์',
+            currentProficiency: {
+              id: 3,
+              name: 'ปานกลาง (Intermediate)',
+              sortOrder: 3,
+              isDefault: false,
+              isProficient: true,
+            },
+            requiredProficiency: {
+              id: 4,
+              name: 'ชำนาญการ (Proficient)',
+              sortOrder: 4,
+              isDefault: false,
+              isProficient: true,
+            },
+            linkedCourses: [
+              { courseId: 1, courseName: 'Introduction to Programming with Python', progress: 60 },
+              { courseId: 2, courseName: 'Full-Stack Web Development with React & Node.js', progress: 35 },
+            ],
+            evidence: [],
+          },
+          {
+            competencyId: 2021,
+            competencyName: 'การทำงานเป็นทีม',
+            currentProficiency: null,
+            requiredProficiency: {
+              id: 4,
+              name: 'ชำนาญการ (Proficient)',
+              sortOrder: 4,
+              isDefault: false,
+              isProficient: true,
+            },
+            linkedCourses: [],
+            evidence: [],
+          },
+        ],
+      };
+    },
+    enabled: isDemoMode && planId > 0,
+    staleTime: Infinity,
+  });
+
+  const apiQuery = useQuery<PlanDetail>({
     queryKey: ['learningPlan', planId],
     queryFn: () => apiFetch<PlanDetail>(`/api/moodle/learning-plans/${planId}`),
-    enabled: planId > 0,
+    enabled: !isDemoMode && planId > 0,
   });
+
+  return isDemoMode ? demoQuery : apiQuery;
 }
 
 export function usePlanCompetencies(planId: number) {

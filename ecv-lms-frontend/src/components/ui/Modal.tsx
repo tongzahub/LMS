@@ -9,9 +9,17 @@ export interface ModalProps {
   title?: string;
   children: React.ReactNode;
   className?: string;
+  size?: 'sm' | 'md' | 'lg' | 'xl';
 }
 
-function Modal({ isOpen, onClose, title, children, className = '' }: ModalProps) {
+const SIZE_CLASSES: Record<string, string> = {
+  sm: 'max-w-sm',
+  md: 'max-w-lg',
+  lg: 'max-w-2xl',
+  xl: 'max-w-4xl',
+};
+
+function Modal({ isOpen, onClose, title, children, className = '', size = 'md' }: ModalProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const previousFocusRef = useRef<HTMLElement | null>(null);
 
@@ -52,7 +60,7 @@ function Modal({ isOpen, onClose, title, children, className = '' }: ModalProps)
   return (
     <dialog
       ref={dialogRef}
-      className={`backdrop:bg-black/50 bg-white rounded-xl shadow-xl p-0 max-w-lg w-full mx-auto ${className}`}
+      className={`backdrop:bg-black/50 bg-white rounded-xl shadow-xl p-0 ${SIZE_CLASSES[size]} w-full mx-auto ${className}`}
       onClick={handleBackdropClick}
       aria-labelledby={title ? 'modal-title' : undefined}
     >

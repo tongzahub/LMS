@@ -15,12 +15,13 @@ function Skeleton({ variant = 'text', width, height, className = '', ...props }:
 
   return (
     <div
-      className={`animate-pulse bg-gray-200 ${variants[variant]} ${className}`}
+      className={`relative overflow-hidden bg-gray-200/70 ${variants[variant]} ${className}`}
       style={{ width, height }}
       role="status"
       aria-label="Loading"
       {...props}
     >
+      <div className="absolute inset-0 -translate-x-full animate-shimmer bg-gradient-to-r from-transparent via-white/60 to-transparent" />
       <span className="sr-only">Loading...</span>
     </div>
   );

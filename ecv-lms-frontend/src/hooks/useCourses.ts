@@ -1,5 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiFetch } from '@/lib/api/fetch';
+import { isDemoMode } from '@/lib/demo';
+import { MOCK_COURSES, MOCK_COURSE_DETAILS, MOCK_COURSE_SECTIONS } from '@/lib/mock';
 
 export interface Course {
   id: number;
@@ -63,26 +65,89 @@ export function useCourses(options?: CourseListOptions) {
   if (options?.search) params.set('search', options.search);
   const qs = params.toString();
 
-  return useQuery<Course[]>({
+  const demoQuery = useQuery<Course[]>({
+    queryKey: ['courses', 'demo', options],
+    queryFn: async () => {
+      await new Promise((r) => setTimeout(r, 200));
+      let result = MOCK_COURSES;
+      if (options?.category) {
+        result = result.filter((c) => c.categoryId === options.category);
+      }
+      if (options?.search) {
+        const q = options.search.toLowerCase();
+        result = result.filter(
+          (c) =>
+            c.fullname.toLowerCase().includes(q) ||
+            c.shortname.toLowerCase().includes(q) ||
+            c.summary.toLowerCase().includes(q),
+        );
+      }
+      return result;
+    },
+    enabled: isDemoMode,
+    staleTime: Infinity,
+  });
+
+  const apiQuery = useQuery<Course[]>({
     queryKey: ['courses', options],
     queryFn: () => apiFetch<Course[]>(`/api/moodle/courses${qs ? `?${qs}` : ''}`),
+    enabled: !isDemoMode,
   });
+
+  return isDemoMode ? demoQuery : apiQuery;
 }
 
 export function useCourseDetail(courseId: number) {
-  return useQuery<CourseDetail>({
+  const demoQuery = useQuery<CourseDetail>({
+    queryKey: ['course', 'demo', courseId],
+    queryFn: async () => {
+      await new Promise((r) => setTimeout(r, 200));
+      const detail = MOCK_COURSE_DETAILS[courseId];
+      if (detail) return detail;
+      const base = MOCK_COURSES.find((c) => c.id === courseId);
+      if (base) {
+        return {
+          ...base,
+          prerequisites: [],
+          enrollmentMethods: [{ type: 'manual', enabled: true }],
+          completionCriteria: [],
+          competencies: [],
+          tags: [],
+        };
+      }
+      throw new Error(`Course ${courseId} not found`);
+    },
+    enabled: isDemoMode && courseId > 0,
+    staleTime: Infinity,
+  });
+
+  const apiQuery = useQuery<CourseDetail>({
     queryKey: ['course', courseId],
     queryFn: () => apiFetch<CourseDetail>(`/api/moodle/courses/${courseId}`),
-    enabled: courseId > 0,
+    enabled: !isDemoMode && courseId > 0,
   });
+
+  return isDemoMode ? demoQuery : apiQuery;
 }
 
 export function useCourseContents(courseId: number) {
-  return useQuery<CourseSection[]>({
+  const demoQuery = useQuery<CourseSection[]>({
+    queryKey: ['courseContents', 'demo', courseId],
+    queryFn: async () => {
+      await new Promise((r) => setTimeout(r, 200));
+      return MOCK_COURSE_SECTIONS[courseId] ?? [];
+    },
+    enabled: isDemoMode && courseId > 0,
+    staleTime: Infinity,
+  });
+
+  const apiQuery = useQuery<CourseSection[]>({
     queryKey: ['courseContents', courseId],
     queryFn: () => apiFetch<CourseSection[]>(`/api/moodle/courses/${courseId}/contents`),
-    enabled: courseId > 0,
+    enabled: !isDemoMode && courseId > 0,
   });
+
+  return isDemoMode ? demoQuery : apiQuery;
 }
 
 export interface CreateCourseParams {

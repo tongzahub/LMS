@@ -2,7 +2,11 @@ import { CognitoJwtVerifier } from 'aws-jwt-verify';
 import type { CognitoJwtPayload } from 'aws-jwt-verify/jwt-model';
 import type { UserRole } from './types';
 
-/** Singleton JWT verifier for Cognito access tokens */
+/**
+ * Singleton JWT verifier for Cognito ID tokens.
+ * We use ID tokens (not access tokens) because they contain user attributes
+ * like custom:moodle_user_id that BFF routes need for Moodle API calls.
+ */
 let verifier: ReturnType<typeof CognitoJwtVerifier.create> | null = null;
 
 function getVerifier() {
@@ -15,7 +19,7 @@ function getVerifier() {
     verifier = CognitoJwtVerifier.create({
       userPoolId,
       clientId,
-      tokenUse: 'access',
+      tokenUse: 'id',
     });
   }
   return verifier;
@@ -73,6 +77,23 @@ export function assertRole(payload: CognitoJwtPayload, allowedRoles: UserRole[])
   if (!hasAllowedRole) {
     throw new RoleError('Insufficient permissions');
   }
+}
+
+/**
+ * Extracts the Moodle user ID from the verified ID token payload.
+ * The custom:moodle_user_id attribute is set by the Post-Confirmation Lambda
+ * when the user first confirms their email.
+ *
+ * @returns Moodle user ID as a number
+ * @throws RoleError if moodle_user_id is missing (user not provisioned in Moodle)
+ */
+export function extractMoodleUserId(payload: CognitoJwtPayload): number {
+  const raw = (payload as Record<string, unknown>)['custom:moodle_user_id'];
+  const id = Number(raw);
+  if (!raw || isNaN(id) || id <= 0) {
+    throw new RoleError('User not provisioned in Moodle (missing moodle_user_id)');
+  }
+  return id;
 }
 
 /** Error thrown when JWT verification fails (maps to 401) */

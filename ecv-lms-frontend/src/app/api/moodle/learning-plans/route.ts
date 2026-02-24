@@ -1,5 +1,5 @@
 import type { NextRequest } from 'next/server';
-import { verifyRequest, assertRole } from '@/lib/auth/jwt-verifier';
+import { verifyRequest, assertRole, extractMoodleUserId } from '@/lib/auth/jwt-verifier';
 import { createMoodleClient } from '@/lib/moodle/client';
 import { WS } from '@/lib/moodle/endpoints';
 import { jsonResponse, handleApiError } from '@/lib/api/helpers';
@@ -9,8 +9,7 @@ export async function GET(request: NextRequest) {
     const payload = await verifyRequest(request);
     assertRole(payload, ['ADMIN', 'TEACHER', 'STUDENT']);
     const { searchParams } = new URL(request.url);
-    const userId = searchParams.get('userId') ??
-      String((payload as Record<string, unknown>)['custom:moodle_user_id']);
+    const userId = searchParams.get('userId') ?? String(extractMoodleUserId(payload));
     const client = createMoodleClient();
     const plans = await client.call(WS.TOOL_LP_DATA_FOR_PLANS_PAGE, { userid: Number(userId) });
     return jsonResponse(plans);

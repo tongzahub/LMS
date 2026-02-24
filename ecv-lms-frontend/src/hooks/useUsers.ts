@@ -1,5 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { apiFetch } from '@/lib/api/fetch';
+import { isDemoMode } from '@/lib/demo';
+import { MOCK_USERS } from '@/lib/mock';
 
 export interface UserListItem {
   id: number;
@@ -41,10 +43,31 @@ export function useUsers(filters?: UserFilters) {
   if (filters?.value) params.set('value', filters.value);
   const qs = params.toString();
 
-  return useQuery<UserListItem[]>({
+  const demoQuery = useQuery<UserListItem[]>({
+    queryKey: ['users', 'demo', filters],
+    queryFn: async () => {
+      await new Promise((r) => setTimeout(r, 200));
+      if (filters?.field && filters?.value) {
+        const val = filters.value.toLowerCase();
+        return MOCK_USERS.filter((u) => {
+          const field = filters.field as keyof UserListItem;
+          const fieldValue = u[field];
+          return String(fieldValue).toLowerCase().includes(val);
+        });
+      }
+      return MOCK_USERS;
+    },
+    enabled: isDemoMode,
+    staleTime: Infinity,
+  });
+
+  const apiQuery = useQuery<UserListItem[]>({
     queryKey: ['users', filters],
     queryFn: () => apiFetch<UserListItem[]>(`/api/moodle/users${qs ? `?${qs}` : ''}`),
+    enabled: !isDemoMode,
   });
+
+  return isDemoMode ? demoQuery : apiQuery;
 }
 
 export function useCreateUser() {
