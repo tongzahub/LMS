@@ -21,7 +21,9 @@
       "Bash(\"/mnt/c/Program Files/Amazon/AWSCLIV2/aws.exe\" ecs:*)",
       "Bash(\"/mnt/c/Program Files/Amazon/AWSCLIV2/aws.exe\" logs:*)",
       "WebFetch(domain:produc-loadb-f6jfgyi1e123-1241439648.ap-southeast-1.elb.amazonaws.com)",
-      "Bash(head:*)"
+      "Bash(head:*)",
+      "Bash(\"/mnt/c/Program Files/Amazon/AWSCLIV2/aws.exe\" cloudformation:*)",
+      "Bash(npx tsc:*)"
     ]
   }
 }

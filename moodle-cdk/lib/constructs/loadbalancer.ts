@@ -58,15 +58,13 @@ export class LoadBalancer extends Construct {
       defaultTargetGroups: [this.targetGroup],
     });
 
-    // --- HTTP listener on port 80 — redirect to HTTPS ---
+    // --- HTTP listener on port 80 — forward to target group ---
+    // CloudFront connects to ALB via HTTP (port 80). HTTPS termination is handled
+    // by CloudFront for end users, so the ALB must forward (not redirect) HTTP traffic.
     this.alb.addListener('HttpListener', {
       port: 80,
       protocol: elbv2.ApplicationProtocol.HTTP,
-      defaultAction: elbv2.ListenerAction.redirect({
-        protocol: 'HTTPS',
-        port: '443',
-        permanent: true,
-      }),
+      defaultTargetGroups: [this.targetGroup],
     });
 
     // --- CloudFormation output for ALB DNS ---
