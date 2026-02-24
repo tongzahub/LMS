@@ -94,7 +94,7 @@ export class MoodleStack extends cdk.Stack {
     });
 
     // --- 9. Monitoring (CloudWatch — needs ECS service, Aurora cluster, ALB) ---
-    const monitoring = new Monitoring(this, 'Monitoring', {
+    new Monitoring(this, 'Monitoring', {
       service: compute.service,
       cluster: database.cluster,
       alb: loadBalancer.alb,

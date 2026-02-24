@@ -135,12 +135,12 @@ export class Monitoring extends Construct {
     });
 
     // --- Aurora Event Subscriptions via SNS ---
-    new rds.CfnEventSubscription(this, 'AuroraAvailabilitySubscription', {
+    new rds.CfnEventSubscription(this, 'AuroraFailoverSubscription', {
       snsTopicArn: this.snsTopic.topicArn,
       sourceType: 'db-cluster',
       sourceIds: [cluster.clusterIdentifier],
-      eventCategories: ['availability'],
-      subscriptionName: `moodle-${config.environment}-aurora-availability`,
+      eventCategories: ['failover'],
+      subscriptionName: `moodle-${config.environment}-aurora-failover`,
     });
 
     new rds.CfnEventSubscription(this, 'AuroraFailureSubscription', {
@@ -159,12 +159,12 @@ export class Monitoring extends Construct {
       subscriptionName: `moodle-${config.environment}-aurora-maintenance`,
     });
 
-    new rds.CfnEventSubscription(this, 'AuroraLowStorageSubscription', {
+    new rds.CfnEventSubscription(this, 'AuroraNotificationSubscription', {
       snsTopicArn: this.snsTopic.topicArn,
       sourceType: 'db-cluster',
       sourceIds: [cluster.clusterIdentifier],
-      eventCategories: ['low-storage'],
-      subscriptionName: `moodle-${config.environment}-aurora-low-storage`,
+      eventCategories: ['notification'],
+      subscriptionName: `moodle-${config.environment}-aurora-notification`,
     });
 
     // --- CloudWatch Dashboard ---

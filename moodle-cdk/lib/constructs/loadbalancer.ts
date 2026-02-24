@@ -20,7 +20,7 @@ export class LoadBalancer extends Construct {
   constructor(scope: Construct, id: string, props: LoadBalancerProps) {
     super(scope, id);
 
-    const { vpc, albSecurityGroup, certificateArn, config } = props;
+    const { vpc, albSecurityGroup, certificateArn } = props;
 
     // --- Internet-facing ALB in public subnets ---
     this.alb = new elbv2.ApplicationLoadBalancer(this, 'Alb', {
@@ -33,7 +33,7 @@ export class LoadBalancer extends Construct {
     // --- Target group with health check on /login/index.php ---
     this.targetGroup = new elbv2.ApplicationTargetGroup(this, 'TargetGroup', {
       vpc,
-      port: 8080,
+      port: 80,
       protocol: elbv2.ApplicationProtocol.HTTP,
       targetType: elbv2.TargetType.IP,
       healthCheck: {
@@ -42,7 +42,7 @@ export class LoadBalancer extends Construct {
         interval: cdk.Duration.seconds(30),
         timeout: cdk.Duration.seconds(10),
         healthyThresholdCount: 2,
-        unhealthyThresholdCount: 3,
+        unhealthyThresholdCount: 5,
         healthyHttpCodes: '200-399',
       },
       deregistrationDelay: cdk.Duration.seconds(60),

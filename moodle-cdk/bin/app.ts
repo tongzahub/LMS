@@ -39,6 +39,7 @@ if (!cloudfrontCertificateArn) {
 // --- WAF Stack (must be in us-east-1 for CloudFront association) ---
 const wafStack = new WafStack(app, `${config.environment}-MoodleWafStack`, {
   config,
+  crossRegionReferences: true,
   env: {
     account,
     region: 'us-east-1',
@@ -52,6 +53,7 @@ const moodleStack = new MoodleStack(app, `${config.environment}-MoodleStack`, {
   wafWebAclArn: wafStack.webAclArn,
   albCertificateArn,
   cloudfrontCertificateArn,
+  crossRegionReferences: true,
   env: {
     account,
     region: config.region,

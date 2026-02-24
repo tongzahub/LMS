@@ -27,7 +27,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 RUN docker-php-ext-configure gd --with-freetype --with-jpeg --with-webp \
     && docker-php-ext-install -j$(nproc) \
         mysqli \
-        pgsql \
         soap \
         intl \
         gd \

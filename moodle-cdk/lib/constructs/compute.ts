@@ -1,3 +1,4 @@
+import * as path from 'path';
 import * as cdk from 'aws-cdk-lib';
 import * as ec2 from 'aws-cdk-lib/aws-ec2';
 import * as ecr from 'aws-cdk-lib/aws-ecr';
@@ -90,18 +91,30 @@ export class Compute extends Construct {
     }
 
     // --- Container Definition ---
+    // Use fromAsset to automatically build the Docker image and push to ECR during cdk deploy.
+    // This eliminates the need to manually push an image before the first deployment.
+    const dockerDir = path.join(__dirname, '../../docker');
     const container = taskDefinition.addContainer('MoodleContainer', {
-      image: ecs.ContainerImage.fromEcrRepository(this.repository, 'latest'),
+      image: ecs.ContainerImage.fromAsset(dockerDir, {
+        platform: cdk.aws_ecr_assets.Platform.LINUX_AMD64,
+      }),
       logging: ecs.LogDrivers.awsLogs({
         logGroup,
         streamPrefix: 'moodle',
       }),
       secrets: {
-        DB_HOST: ecs.Secret.fromSecretsManager(dbSecret, 'host'),
-        DB_PORT: ecs.Secret.fromSecretsManager(dbSecret, 'port'),
-        DB_NAME: ecs.Secret.fromSecretsManager(dbSecret, 'dbname'),
-        DB_USER: ecs.Secret.fromSecretsManager(dbSecret, 'username'),
-        DB_PASS: ecs.Secret.fromSecretsManager(dbSecret, 'password'),
+        MOODLE_DB_HOST: ecs.Secret.fromSecretsManager(dbSecret, 'host'),
+        MOODLE_DB_PORT: ecs.Secret.fromSecretsManager(dbSecret, 'port'),
+        MOODLE_DB_NAME: ecs.Secret.fromSecretsManager(dbSecret, 'dbname'),
+        MOODLE_DB_USER: ecs.Secret.fromSecretsManager(dbSecret, 'username'),
+        MOODLE_DB_PASS: ecs.Secret.fromSecretsManager(dbSecret, 'password'),
+      },
+      environment: {
+        MOODLE_WWWROOT: `https://${config.domainName}`,
+        MOODLE_DATAROOT: '/var/www/moodle/data',
+        MOODLE_SESSION_CACHE_ENDPOINT: props.cacheEndpoints.session,
+        MOODLE_MUC_CACHE_ENDPOINT: props.cacheEndpoints.muc,
+        MOODLE_ADMIN_EMAIL: 'admin@ecvth.com',
       },
       portMappings: [
         { containerPort: 80, protocol: ecs.Protocol.TCP },

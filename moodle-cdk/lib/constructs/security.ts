@@ -57,9 +57,9 @@ export class Security extends Construct {
         passwordLength: 32,
       },
     });
-    moodleAdminPassword.addRotationSchedule('AdminPasswordRotation', {
-      automaticallyAfter: cdk.Duration.days(30),
-    });
+    // Note: Rotation schedules omitted — these are standalone secrets without
+    // an associated database or rotation Lambda. Aurora credentials are managed
+    // separately via rds.Credentials.fromGeneratedSecret in the Database construct.
 
     const moodleDbPassword = new secretsmanager.Secret(this, 'MoodleDbPassword', {
       secretName: `moodle-${config.environment}-db-password`,
@@ -70,9 +70,6 @@ export class Security extends Construct {
         passwordLength: 32,
       },
     });
-    moodleDbPassword.addRotationSchedule('DbPasswordRotation', {
-      automaticallyAfter: cdk.Duration.days(30),
-    });
 
     const moodleApiKey = new secretsmanager.Secret(this, 'MoodleApiKey', {
       secretName: `moodle-${config.environment}-api-key`,
@@ -82,9 +79,6 @@ export class Security extends Construct {
         includeSpace: false,
         passwordLength: 64,
       },
-    });
-    moodleApiKey.addRotationSchedule('ApiKeyRotation', {
-      automaticallyAfter: cdk.Duration.days(30),
     });
 
     this.secrets = {

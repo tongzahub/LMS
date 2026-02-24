@@ -22,13 +22,35 @@ export class Database extends Construct {
 
     const { vpc, dbSecurityGroup, kmsKey, config } = props;
 
+    // --- Cluster parameter group for Moodle compatibility ---
+    const parameterGroup = new rds.ParameterGroup(this, 'ClusterParameterGroup', {
+      engine: rds.DatabaseClusterEngine.auroraMysql({
+        version: rds.AuroraMysqlEngineVersion.VER_3_08_0,
+      }),
+      description: 'Moodle-optimized Aurora MySQL 8.0 parameters',
+      parameters: {
+        // Moodle requires utf8mb4 for full Unicode support
+        'character_set_server': 'utf8mb4',
+        'collation_server': 'utf8mb4_unicode_ci',
+        // Ensure InnoDB file-per-table for ROW_FORMAT=Compressed support
+        'innodb_file_per_table': '1',
+        // Use DYNAMIC as default row format (better for large indexes)
+        'innodb_default_row_format': 'dynamic',
+        // Increase sort buffer for Moodle's complex queries
+        'sort_buffer_size': '2097152',
+        // Moodle recommended: disable strict mode for compatibility
+        'sql_mode': 'STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION',
+      },
+    });
+
     this.cluster = new rds.DatabaseCluster(this, 'AuroraCluster', {
       engine: rds.DatabaseClusterEngine.auroraMysql({
-        version: rds.AuroraMysqlEngineVersion.VER_3_05_2,
+        version: rds.AuroraMysqlEngineVersion.VER_3_08_0,
       }),
       credentials: rds.Credentials.fromGeneratedSecret('moodleadmin', {
         secretName: `moodle-${config.environment}-aurora-credentials`,
       }),
+      parameterGroup,
       serverlessV2MinCapacity: config.minAcu,
       serverlessV2MaxCapacity: config.maxAcu,
       writer: rds.ClusterInstance.serverlessV2('Writer', {
