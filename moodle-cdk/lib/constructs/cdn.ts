@@ -24,10 +24,10 @@ export class Cdn extends Construct {
 
     const { alb, wafWebAclArn, certificateArn, config } = props;
 
-    // --- ALB origin (HTTP only — ALB terminates HTTPS) ---
+    // --- ALB origin (HTTPS — ALB port 80 redirects to 443, so we must use HTTPS) ---
     const albOrigin = new origins.LoadBalancerV2Origin(alb, {
-      protocolPolicy: cloudfront.OriginProtocolPolicy.HTTP_ONLY,
-      httpPort: 80,
+      protocolPolicy: cloudfront.OriginProtocolPolicy.HTTPS_ONLY,
+      httpsPort: 443,
     });
 
     // --- ACM certificate (us-east-1) ---
@@ -47,7 +47,10 @@ export class Cdn extends Construct {
       queryStringBehavior: cloudfront.CacheQueryStringBehavior.none(),
     });
 
-    // --- Origin request policy for dynamic content (forward Host + cookies for Moodle sessions) ---
+    // --- Origin request policy for dynamic content ---
+    // Only forward Host header — CloudFront automatically adds X-Forwarded-For,
+    // and the ALB adds X-Forwarded-Proto. These are restricted headers in CloudFront
+    // origin request policies and cannot be explicitly forwarded.
     const dynamicOriginRequestPolicy = new cloudfront.OriginRequestPolicy(this, 'DynamicOriginRequestPolicy', {
       originRequestPolicyName: `${config.environment}-moodle-dynamic-origin`,
       comment: 'Forward Host header and cookies for Moodle session handling',
@@ -89,21 +92,25 @@ export class Cdn extends Construct {
       },
 
       // Static asset behaviors — cached at edge with long TTL
+      // Note: /theme/ and /lib/ contain PHP combo loaders (yui_combo.php, javascript.php)
+      // that need query strings forwarded, so we use a cache policy that includes query strings.
       additionalBehaviors: {
-        '/theme/*': {
+        '/theme/image.php/*': {
           origin: albOrigin,
           viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
           allowedMethods: cloudfront.AllowedMethods.ALLOW_GET_HEAD,
           cachedMethods: cloudfront.CachedMethods.CACHE_GET_HEAD,
           cachePolicy: staticCachePolicy,
+          originRequestPolicy: dynamicOriginRequestPolicy,
           compress: true,
         },
-        '/lib/*': {
+        '/theme/styles.php/*': {
           origin: albOrigin,
           viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
           allowedMethods: cloudfront.AllowedMethods.ALLOW_GET_HEAD,
           cachedMethods: cloudfront.CachedMethods.CACHE_GET_HEAD,
           cachePolicy: staticCachePolicy,
+          originRequestPolicy: dynamicOriginRequestPolicy,
           compress: true,
         },
         '/pluginfile.php/*': {
@@ -112,6 +119,7 @@ export class Cdn extends Construct {
           allowedMethods: cloudfront.AllowedMethods.ALLOW_GET_HEAD,
           cachedMethods: cloudfront.CachedMethods.CACHE_GET_HEAD,
           cachePolicy: staticCachePolicy,
+          originRequestPolicy: dynamicOriginRequestPolicy,
           compress: true,
         },
       },

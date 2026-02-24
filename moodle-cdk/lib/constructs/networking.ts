@@ -22,7 +22,7 @@ export class Networking extends Construct {
     super(scope, id);
 
     const maxAzs = props.maxAzs ?? 2;
-    const containerPort = props.containerPort ?? 8080;
+    const containerPort = props.containerPort ?? 80;
 
     // --- VPC with public and private subnets ---
     this.vpc = new ec2.Vpc(this, 'Vpc', {

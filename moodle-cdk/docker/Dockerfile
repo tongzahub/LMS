@@ -66,6 +66,9 @@ RUN git clone --depth 1 --branch ${MOODLE_VERSION} \
 # Set ownership to www-data (uid 33) for all Moodle directories
 RUN chown -R www-data:www-data /var/www/moodle
 
+# Cache-bust: ensures Docker rebuilds layers below when config files change
+ARG CACHEBUST=1
+
 # Copy PHP configuration
 COPY config/php.ini /usr/local/etc/php/conf.d/moodle.ini
 

@@ -97,6 +97,10 @@ export class Compute extends Construct {
     const container = taskDefinition.addContainer('MoodleContainer', {
       image: ecs.ContainerImage.fromAsset(dockerDir, {
         platform: cdk.aws_ecr_assets.Platform.LINUX_AMD64,
+        // Invalidate Docker cache to ensure config changes are always picked up
+        buildArgs: {
+          CACHEBUST: new Date().toISOString(),
+        },
       }),
       logging: ecs.LogDrivers.awsLogs({
         logGroup,

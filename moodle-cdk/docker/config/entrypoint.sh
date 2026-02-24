@@ -100,7 +100,10 @@ global \$CFG;
 \$CFG->session_redis_encrypt = ['verify_peer' => false, 'verify_peer_name' => false];
 
 // --- Reverse proxy (ALB / CloudFront) ---
-\$CFG->reverseproxy = true;
+// Note: reverseproxy is NOT set because mod_remoteip already handles
+// X-Forwarded-For at the Apache level (replacing REMOTE_ADDR), which
+// removes the header before PHP sees it. Setting reverseproxy=true
+// would cause Moodle to reject requests when X-Forwarded-For is absent.
 \$CFG->sslproxy     = true;
 
 // --- Performance ---
