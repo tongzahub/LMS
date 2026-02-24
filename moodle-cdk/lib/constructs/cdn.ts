@@ -33,19 +33,6 @@ export class Cdn extends Construct {
     // --- ACM certificate (us-east-1) ---
     const certificate = acm.Certificate.fromCertificateArn(this, 'CfCertificate', certificateArn);
 
-    // --- Cache policy for static assets (long TTL) ---
-    const staticCachePolicy = new cloudfront.CachePolicy(this, 'StaticCachePolicy', {
-      cachePolicyName: `${config.environment}-moodle-static-cache`,
-      comment: 'Cache policy for Moodle static assets',
-      defaultTtl: cdk.Duration.days(1),
-      minTtl: cdk.Duration.seconds(0),
-      maxTtl: cdk.Duration.days(30),
-      enableAcceptEncodingGzip: true,
-      enableAcceptEncodingBrotli: true,
-      headerBehavior: cloudfront.CacheHeaderBehavior.none(),
-      cookieBehavior: cloudfront.CacheCookieBehavior.none(),
-      queryStringBehavior: cloudfront.CacheQueryStringBehavior.none(),
-    });
 
     // --- Origin request policy for dynamic content ---
     // Only forward Host header — CloudFront automatically adds X-Forwarded-For,
@@ -91,38 +78,7 @@ export class Cdn extends Construct {
         originRequestPolicy: dynamicOriginRequestPolicy,
       },
 
-      // Static asset behaviors — cached at edge with long TTL
-      // Note: /theme/ and /lib/ contain PHP combo loaders (yui_combo.php, javascript.php)
-      // that need query strings forwarded, so we use a cache policy that includes query strings.
-      additionalBehaviors: {
-        '/theme/image.php/*': {
-          origin: albOrigin,
-          viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
-          allowedMethods: cloudfront.AllowedMethods.ALLOW_GET_HEAD,
-          cachedMethods: cloudfront.CachedMethods.CACHE_GET_HEAD,
-          cachePolicy: staticCachePolicy,
-          originRequestPolicy: dynamicOriginRequestPolicy,
-          compress: true,
-        },
-        '/theme/styles.php/*': {
-          origin: albOrigin,
-          viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
-          allowedMethods: cloudfront.AllowedMethods.ALLOW_GET_HEAD,
-          cachedMethods: cloudfront.CachedMethods.CACHE_GET_HEAD,
-          cachePolicy: staticCachePolicy,
-          originRequestPolicy: dynamicOriginRequestPolicy,
-          compress: true,
-        },
-        '/pluginfile.php/*': {
-          origin: albOrigin,
-          viewerProtocolPolicy: cloudfront.ViewerProtocolPolicy.REDIRECT_TO_HTTPS,
-          allowedMethods: cloudfront.AllowedMethods.ALLOW_GET_HEAD,
-          cachedMethods: cloudfront.CachedMethods.CACHE_GET_HEAD,
-          cachePolicy: staticCachePolicy,
-          originRequestPolicy: dynamicOriginRequestPolicy,
-          compress: true,
-        },
-      },
+
     });
 
     // --- CloudFormation output ---
